@@ -1,93 +1,126 @@
-# Contract Monthly Claims Management System
+Contract Monthly Claims Management System – Part 3
+YouTube Links and GitHub
 
-YouTube Link (PowerPoint) : https: //www.youtube.com/watch?v=XxX81Gimx6E
+PowerPoint Presentation: https://www.youtube.com/watch?v=XxX81Gimx6E
 
-YouTube Link (Claims Demo) :  https://www.youtube.com/watch?v=brVpBBH9qgA
+Claims Demo: https://www.youtube.com/watch?v=brVpBBH9qgA
 
-YouTube Link (Database Demo):  https://www.youtube.com/watch?v=zVcmbLhwZ9k
+Database Demo: https://www.youtube.com/watch?v=zVcmbLhwZ9k
 
-GitHub Link: https: //github.com/VCWVL/prog6212-poe-ST10451194
+GitHub Repository: https://github.com/VCWVL/prog6212-poe-ST10451194
 
-## Overview
+Project Overview
 
-This project is a **Contract Monthly Claims Management System** built using **ASP.NET Core MVC** and **SQL Server (SSMS)**. It allows lecturers, programme coordinators, and academic managers to manage monthly claims efficiently. The system features a fully functional **login and registration system**, claims submission, approval workflow, and persistent storage using a SQL database.  
+This project is Part 3 of the Contract Monthly Claims Management System, developed using ASP.NET Core MVC, C#, and SQL Server (SSMS). The system allows lecturers, programme coordinators, and academic managers to submit, manage, and approve monthly claims efficiently.
 
-This project represents **Part 2 of the system**, with significant improvements over the initial prototype.
+Part 3 builds upon Part 2 by introducing several new features and improvements:
 
----
+Database export functionality for secure backup and reporting.
 
-## Features
+Enhanced file upload management, including metadata and encryption for supporting documents.
 
-### 1. User Authentication
-- Fully functional **Login and Registration system**.
-- Users are assigned **roles**: Lecturer, Programme Coordinator, Academic Manager.
-- Role-based redirects to their respective dashboards.
-- User credentials and information are securely stored in the SQL database.
+Improved dashboards and MVC Views for all roles, providing a cleaner and more intuitive interface.
 
-### 2. Claims Management
-- Lecturers can **submit claims** including:
-  - Description of the work
-  - Hours worked
-  - Hourly rate
-  - Supporting document uploads (optional)
-- The system **automatically calculates the claim amount** (`HoursWorked × HourlyRate`).
-- Claims are stored in the **SQL Server database**, ensuring data persistence.
+Robust error handling and input validation across forms and workflows.
 
-### 3. Approval Workflow
-- **Programme Coordinator** can review and verify claims:
-  - Approve or reject submitted claims.
-  - Add comments for lecturer feedback.
-- **Academic Manager** can approve verified claims from the coordinator:
-  - Approve or reject claims.
-  - Add manager-specific comments.
-- Claims workflow is **role-based**, and only appropriate users can access their part of the process.
+The system ensures role-based access, data integrity, and secure storage, making claim management seamless and reliable.
 
-### 4. Database Integration
-- The system uses **SQL Server (SSMS)** for persistent data storage.
-- Database contains the following tables:
-  - **Users**: Stores usernames, passwords, roles, and programme info.
-  - **Claims**: Stores claim information, including hours, rate, amount, status, and comments.
-  - **ClaimDocuments**: Optional table to store uploaded files associated with claims.
-- Claims and users are fully linked with **foreign key relationships**.
+Key Features
+1. User Authentication and Role Management
 
-### 5. User-Friendly Interface
-- Clean, organized, and responsive **MVC Views** for:
-  - Login and Registration
-  - Submit Claim
-  - My Claims (Lecturer)
-  - Pending Claims (Programme Coordinator)
-  - Claims Ready for Approval (Academic Manager)
-  - Claim Review Pages
-- Intuitive navigation and feedback for users.
+Fully functional login and registration system with role assignment.
 
-### 6. Error Handling & Validation
-- Form inputs validated on the server side.
-- Prevents duplicate usernames during registration.
-- Handles missing or null fields with proper defaults and validation messages.
+Users are assigned roles: Lecturer, Programme Coordinator, Academic Manager.
 
----
+Role-based redirects ensure users access only their dashboards and relevant actions.
 
-## Improvements Over Previous Version
-- Fully functional **login system** with role-based access.
-- **Persistent claim storage** in SQL database.
-- Automatic **calculation of claim amounts**.
-- Improved **user interface** and user experience.
-- Integrated **file upload** for supporting documents.
-- Complete **approval workflow** for coordinator and manager.
-- Fully tested to ensure no runtime errors when submitting or approving claims.
+Credentials are securely stored in the SQL Server database.
 
----
+2. Claims Management
 
-## Technologies Used
-- **Backend:** ASP.NET Core MVC, C#
-- **Database:** SQL Server (SSMS)
-- **Frontend:** Razor Views, Bootstrap (optional for styling)
-- **Session Management:** ASP.NET Core Session for user authentication
+Lecturers can submit monthly claims including:
 
----
+Work description
 
-## Database Schema
-```sql
+Hours worked
+
+Hourly rate
+
+Optional supporting document uploads
+
+The system calculates claim amounts automatically (Hours × Rate).
+
+All claims are persisted in the database with timestamps and status tracking.
+
+3. Approval Workflow
+
+Programme Coordinator: Reviews and verifies claims, approves or rejects, and provides feedback.
+
+Academic Manager: Approves verified claims from coordinators and provides manager-specific comments.
+
+Role-based workflows prevent unauthorized access to sensitive processes.
+
+4. Database Export Functionality
+
+Claims and user data can be exported securely for reporting or backup.
+
+Exported data preserves all relationships and metadata for claims and uploaded files.
+
+Supports ongoing auditing and system maintenance.
+
+5. File Upload Management
+
+Users can upload supporting documents with each claim.
+
+Files are stored securely with metadata: original file name, stored name, size, type, encryption IV and tag.
+
+Upload history is tracked and displayed for reference.
+
+6. User Interface (UI)
+
+Clean and responsive MVC Views for all functionalities.
+
+Dashboards for lecturers, coordinators, and managers show claims status, pending actions, and summaries.
+
+Intuitive navigation ensures minimal learning curve for users.
+
+7. Error Handling and Validation
+
+Prevents duplicate usernames during registration.
+
+Validates form inputs to ensure data integrity.
+
+Handles null or missing fields gracefully with default values.
+
+Improvements Over Part 2
+
+Part 3 introduces significant enhancements compared to Part 2:
+
+Database Export Functionality – Ability to export claims and user data safely for backup or reporting.
+
+Enhanced File Uploads – Metadata storage, encryption support, and upload history tracking.
+
+Refined Dashboards and Views – Cleaner UI, better layout, and more intuitive navigation.
+
+Role-Based Workflow Enhancements – Stronger access control and clearer claim processing for coordinators and managers.
+
+Automated Calculations and Validations – Claims are calculated automatically with input validation.
+
+Bug Fixes and Testing – Fully tested claim submission, approval, and export processes for reliability.
+
+Technologies Used
+
+Backend: ASP.NET Core MVC, C#
+
+Frontend: Razor Views, HTML, CSS, Bootstrap (optional for styling)
+
+Database: SQL Server (SSMS)
+
+File Handling: Encrypted file storage with metadata
+
+Session Management: ASP.NET Core Session for secure authentication
+
+Database Schema
 -- Users table
 CREATE TABLE Users (
     UserId INT IDENTITY(1,1) PRIMARY KEY,
@@ -123,21 +156,41 @@ CREATE TABLE ClaimDocuments (
     CONSTRAINT FK_ClaimDocuments_Claims FOREIGN KEY (ClaimId) REFERENCES Claims(ClaimId)
 );
 
-Add Claim Management
-Commit message: Added Create, Read, Update, Delete (CRUD) functionality for claims
+GitHub Commit History (Suggested)
 
-Implement File Uploads for Claims
-Commit message: Implemented file upload feature for supporting documents
+Initial Commit – Project structure and configuration.
 
-Add Role-Based Dashboards
-Commit message: Created dashboards for Lecturer, Program Coordinator, and Academic Manager roles
+Add Models – User, Claim, ClaimDocuments.
 
-Integrate MVC Views
-Commit message: Designed views for claims, dashboards, and file uploads
+Configure DbContext – SQL Server connection.
 
-Add Export Functionality
-Commit message: Added export to database feature for claims and users
+Add Controllers – User and Claim management.
 
-Final Testing and Bug Fixes
-Commit message: Fixed bugs, tested full workflow, and ensured database integrity
+Add Views – Login, registration, claim submission, dashboards.
 
+File Upload Feature – Support for claim documents.
+
+Role-Based Dashboards – Lecturer, coordinator, manager dashboards.
+
+Export Functionality – Export claims and users to database.
+
+Validation and Error Handling – Input validation and duplicate prevention.
+
+Final Testing & Bug Fixes – Tested workflows and ensured database integrity.
+
+References (Harvard Style)
+
+Microsoft (2025) Introduction to ASP.NET Core MVC. Available at: https://learn.microsoft.com/en-us/aspnet/core/mvc/overview
+ (Accessed: 21 November 2025).
+
+Microsoft (2025) SQL Server Documentation. Available at: https://learn.microsoft.com/en-us/sql/sql-server/
+ (Accessed: 21 November 2025).
+
+Stack Overflow (2025) How to handle file uploads in ASP.NET Core MVC. Available at: https://stackoverflow.com/questions/asp-net-core-mvc-file-upload
+ (Accessed: 21 November 2025).
+
+Microsoft (2025) Entity Framework Core Documentation. Available at: https://learn.microsoft.com/en-us/ef/core/
+ (Accessed: 21 November 2025).
+
+W3Schools (2025) HTML Forms. Available at: https://www.w3schools.com/html/html_forms.asp
+ (Accessed: 21 November 2025).
