@@ -123,3 +123,6 @@ Commit message: Implemented file upload feature for supporting documents
 
 Add Role-Based Dashboards
 Commit message: Created dashboards for Lecturer, Program Coordinator, and Academic Manager roles
+
+Integrate MVC Views
+Commit message: Designed views for claims, dashboards, and file uploads
