@@ -126,3 +126,6 @@ Commit message: Created dashboards for Lecturer, Program Coordinator, and Academ
 
 Integrate MVC Views
 Commit message: Designed views for claims, dashboards, and file uploads
+
+Add Export Functionality
+Commit message: Added export to database feature for claims and users
