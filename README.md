@@ -117,3 +117,6 @@ CREATE TABLE ClaimDocuments (
 
 Add Claim Management
 Commit message: Added Create, Read, Update, Delete (CRUD) functionality for claims
+
+Implement File Uploads for Claims
+Commit message: Implemented file upload feature for supporting documents
