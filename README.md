@@ -120,3 +120,6 @@ Commit message: Added Create, Read, Update, Delete (CRUD) functionality for clai
 
 Implement File Uploads for Claims
 Commit message: Implemented file upload feature for supporting documents
+
+Add Role-Based Dashboards
+Commit message: Created dashboards for Lecturer, Program Coordinator, and Academic Manager roles
