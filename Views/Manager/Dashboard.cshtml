@@ -1,0 +1,32 @@
+﻿@model IEnumerable<PROG_POE.Models.Claim>
+@{
+    ViewData["Title"] = "Manager Dashboard";
+}
+
+<h2>Claims to Approve</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Lecturer</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.LecturerId</td>
+                <td>@claim.Description</td>
+                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>@claim.Status</td>
+                <td>
+                    <a asp-action="Approve" asp-route-id="@claim.ClaimId">Approve</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

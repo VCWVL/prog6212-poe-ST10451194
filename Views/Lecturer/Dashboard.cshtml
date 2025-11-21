@@ -1,0 +1,43 @@
+﻿@model IEnumerable<PROG_POE.Models.Claim>
+@{
+    ViewData["Title"] = "Lecturer Dashboard";
+}
+
+<h2>My Claims</h2>
+
+<a asp-action="CreateClaim">Create New Claim</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Hours</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>File</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.Description</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate</td>
+                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>@claim.Status</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(claim.FileName))
+                    {
+                        <a href="@Url.Content("~/uploads/" + claim.FileName)" target="_blank">View</a>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@claim.ClaimId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

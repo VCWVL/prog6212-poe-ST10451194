@@ -1,22 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PROG_POE.Models
 {
     public class FileUpload
     {
         [Key]
-        public int Id { get; set; }
+        public int FileId { get; set; }
 
         [Required]
-        public string FileName { get; set; } = string.Empty;
-
-        [Required]
-        public string FilePath { get; set; } = string.Empty;
-
-        // Foreign key
         public int ClaimId { get; set; }
-        [ForeignKey("ClaimId")]
-        public Claim? Claim { get; set; }
+        public Claim Claim { get; set; }
+
+        [Required]
+        public string? FileName { get; set; }
+
+        [Required]
+        public string? FilePath { get; set; } // encrypted storage path
+
+        public DateTime UploadedOn { get; set; } = DateTime.Now;
     }
 }

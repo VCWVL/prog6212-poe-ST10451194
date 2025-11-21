@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace PROG_POE.Models
@@ -7,23 +6,12 @@ namespace PROG_POE.Models
     public class Lecturer
     {
         [Key]
-        public int Id { get; set; }
+        public int LecturerId { get; set; }
 
-        [Required]
-        public string Name { get; set; } = string.Empty;
+        [Required, MaxLength(100)]
+        public string Name { get; set; }
 
-        [Required, EmailAddress]
-        public string Email { get; set; } = string.Empty;
-
-        [Required, DataType(DataType.Password)]
-        public string Password { get; set; } = "password"; // default for POE
-
-        // Role
-        public int RoleId { get; set; }
-        [ForeignKey("RoleId")]
-        public Role? Role { get; set; }
-
-        // Navigation property
-        public ICollection<Claim>? Claims { get; set; }
+        // Navigation: Lecturer can submit multiple claims
+        public ICollection<Claim> Claims { get; set; } = new List<Claim>();
     }
 }
