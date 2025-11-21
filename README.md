@@ -114,3 +114,6 @@ CREATE TABLE ClaimDocuments (
     FilePath NVARCHAR(500) NOT NULL,
     CONSTRAINT FK_ClaimDocuments_Claims FOREIGN KEY (ClaimId) REFERENCES Claims(ClaimId)
 );
+
+Add Claim Management
+Commit message: Added Create, Read, Update, Delete (CRUD) functionality for claims
