@@ -1,5 +1,13 @@
 # Contract Monthly Claims Management System
 
+YouTube Link (PowerPoint) : https: //www.youtube.com/watch?v=XxX81Gimx6E
+
+YouTube Link (Claims Demo) :  https://www.youtube.com/watch?v=brVpBBH9qgA
+
+YouTube Link (Database Demo):  https://www.youtube.com/watch?v=zVcmbLhwZ9k
+
+GitHub Link: https: //github.com/VCWVL/prog6212-poe-ST10451194
+
 ## Overview
 
 This project is a **Contract Monthly Claims Management System** built using **ASP.NET Core MVC** and **SQL Server (SSMS)**. It allows lecturers, programme coordinators, and academic managers to manage monthly claims efficiently. The system features a fully functional **login and registration system**, claims submission, approval workflow, and persistent storage using a SQL database.  
@@ -132,3 +140,4 @@ Commit message: Added export to database feature for claims and users
 
 Final Testing and Bug Fixes
 Commit message: Fixed bugs, tested full workflow, and ensured database integrity
+
