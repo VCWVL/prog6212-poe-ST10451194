@@ -2,77 +2,215 @@
 @using System.IO
 
 @{
-    ViewData["Title"] = "Generate Report";
+    ViewData["Title"] = "Generate Reports";
 }
 
-<div class="container-dashboard">
-    <h2>@ViewData["Title"]</h2>
+<div class="generate-report-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fa-solid fa-file-chart-line"></i>
+            </div>
+            <div class="header-text">
+                <h1>Generate Reports</h1>
+                <p>Create comprehensive analytical reports for claims and payments</p>
+            </div>
+        </div>
+    </div>
 
-    <form method="post" asp-action="GenerateReport" class="report-form">
-        <div class="form-group">
-            <label for="reportName">Report Name</label>
-            <input type="text" class="form-control" id="reportName" name="reportName" required />
+    <!-- Report Generation Form Card -->
+    <div class="form-card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                <h2>Create New Report</h2>
+            </div>
+            <div class="card-badge">
+                <i class="fa-solid fa-sparkles"></i>
+                Generate
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="startDate">Start Date</label>
-            <input type="date" class="form-control" id="startDate" name="startDate" required />
-        </div>
+        <form method="post" asp-action="GenerateReport" class="report-form">
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="reportName">
+                        <i class="fa-solid fa-signature"></i>
+                        Report Name
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="reportName"
+                           name="reportName"
+                           placeholder="Enter a descriptive name for your report"
+                           required />
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="endDate">End Date</label>
-            <input type="date" class="form-control" id="endDate" name="endDate" required />
-        </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startDate">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        Start Date
+                    </label>
+                    <input type="date"
+                           class="form-control"
+                           id="startDate"
+                           name="startDate"
+                           required />
+                </div>
 
-        <div class="form-group">
-            <label for="reportType">Report Type</label>
-            <select class="form-control" id="reportType" name="reportType">
-                <option value="claims">Claims</option>
-                <option value="payments">Payments</option>
-            </select>
-        </div>
+                <div class="form-group">
+                    <label for="endDate">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        End Date
+                    </label>
+                    <input type="date"
+                           class="form-control"
+                           id="endDate"
+                           name="endDate"
+                           required />
+                </div>
+            </div>
 
-        <button type="submit" class="btn-submit"><i class="fa fa-plus-circle" aria-hidden="true"></i> Generate Report</button>
-    </form>
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="reportType">
+                        <i class="fa-solid fa-list-check"></i>
+                        Report Type
+                    </label>
+                    <div class="report-type-selector">
+                        <select class="form-control" id="reportType" name="reportType">
+                            <option value="claims">Claims Report</option>
+                            <option value="payments">Payments Report</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-arrow"></i>
+                    </div>
+                </div>
+            </div>
 
-    <hr />
+            <div class="info-banner">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Reports will be generated in PDF format and saved for future reference</span>
+            </div>
 
-    <h3>Existing Reports</h3>
+            <button type="submit" class="btn-generate">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Generate Report
+            </button>
+        </form>
+    </div>
 
-    @if (Model.ExistingReports != null && Model.ExistingReports.Any())
-    {
-        <table class="table table-hover">
-            <thead class="table-header">
-                <tr>
-                    <th>Report Name</th>
-                    <th>Report Type</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>File Path</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var report in Model.ExistingReports)
+    <!-- Existing Reports Section -->
+    <div class="reports-card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fa-solid fa-folder-open"></i>
+                <h2>Generated Reports</h2>
+            </div>
+            <div class="reports-count">
+                @if (Model.ExistingReports != null && Model.ExistingReports.Any())
                 {
-                    <tr>
-                        <td>@report.ReportName</td>
-                        <td>@report.ReportType</td>
-                        <td>@report.StartDate.ToShortDateString()</td>
-                        <td>@report.EndDate.ToShortDateString()</td>
-                        <td>
-                            <a href="@Url.Content("~/" + report.FilePath)" target="_blank" class="link-view-report">
-                                <i class="fa fa-download" aria-hidden="true"></i> View Report
-                            </a>
-                        </td>
-                    </tr>
+                    <span class="count-badge">@Model.ExistingReports.Count() Reports</span>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No reports found for the selected date range.</p>
-    }
+                else
+                {
+                    <span class="count-badge empty">No Reports</span>
+                }
+            </div>
+        </div>
+
+        <div class="card-body">
+            @if (Model.ExistingReports != null && Model.ExistingReports.Any())
+            {
+                <div class="table-responsive">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fa-solid fa-file-signature"></i>
+                                    Report Name
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    Type
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-calendar-range"></i>
+                                    Date Range
+                                </th>
+                                <th class="text-center">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model.ExistingReports)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="report-name-cell">
+                                            <i class="fa-solid fa-file-pdf file-icon"></i>
+                                            <span>@report.ReportName</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (report.ReportType.ToLower() == "claims")
+                                        {
+                                            <span class="type-badge claims-badge">
+                                                <i class="fa-solid fa-file-invoice"></i>
+                                                Claims
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="type-badge payments-badge">
+                                                <i class="fa-solid fa-money-bill-wave"></i>
+                                                Payments
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="date-range-cell">
+                                            <span class="date-start">@report.StartDate.ToString("dd MMM yyyy")</span>
+                                            <i class="fa-solid fa-arrow-right date-arrow"></i>
+                                            <span class="date-end">@report.EndDate.ToString("dd MMM yyyy")</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="@Url.Content("~/" + report.FilePath)"
+                                           target="_blank"
+                                           class="btn-view-report"
+                                           title="View Report">
+                                            <i class="fa-solid fa-file-arrow-down"></i>
+                                            View Report
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <h3>No Reports Generated Yet</h3>
+                    <p>Start by creating your first report using the form above</p>
+                    <div class="empty-graphic">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <i class="fa-solid fa-money-bill-trend-up"></i>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -80,117 +218,715 @@
         @if (ViewBag.NoClaimsForDateRange != null && (bool)ViewBag.NoClaimsForDateRange)
         {
             <text>
-                alert("No claims found for the selected date range.");
+                    // Custom alert notification
+                    showNotification("No claims found for the selected date range.", "warning");
             </text>
         }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `custom-notification ${type}`;
+            notification.innerHTML = `
+                <i class="fa-solid fa-${type === 'warning' ? 'triangle-exclamation' : 'circle-check'}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" class="close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Date validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+
+            endDate.addEventListener('change', function() {
+                if (startDate.value && endDate.value) {
+                    if (new Date(endDate.value) < new Date(startDate.value)) {
+                        showNotification('End date cannot be before start date', 'warning');
+                        endDate.value = '';
+                    }
+                }
+            });
+
+            // Highlight report type on change
+            const reportType = document.getElementById('reportType');
+            reportType.addEventListener('change', function() {
+                const selector = this.closest('.report-type-selector');
+                selector.classList.add('selected');
+                setTimeout(() => selector.classList.remove('selected'), 300);
+            });
+        });
     </script>
 }
 
 <style>
-    /* Base styles */
-    body {
-        font-family: Arial, sans-serif;
-        background: url('/images/temple3.jpg') no-repeat center center fixed;
-        background-size: cover;
+    .generate-report-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #2D5F4F 0%, #1a4035 100%);
+        border-radius: 20px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(45, 95, 79, 0.2);
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+        .header-icon i {
+            font-size: 2rem;
+            color: #7FD858;
+        }
+
+    .header-text h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .header-text p {
         margin: 0;
-        padding: 0;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.85);
     }
 
-    /* Container */
-    .container-dashboard {
-        margin: 4rem auto;
-        width: 100%;
-        max-width: 900px;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    /* Form Card */
+    .form-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
     }
 
-    /* Heading */
-    h2, h3 {
-        text-align: center;
-        color: #333333;
-        margin-bottom: 1.5rem;
-        font-size: 1.8rem;
+    .card-header {
+        padding: 1.75rem 2rem;
+        background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+        border-bottom: 1px solid #E5E7EB;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    /* Form Styling */
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .card-title i {
+            font-size: 1.5rem;
+            color: #6DBAA3;
+        }
+
+        .card-title h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2D3748;
+        }
+
+    .card-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #E8F5F0, #D1F0E4);
+        color: #2D5F4F;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+        .card-badge i {
+            font-size: 0.9rem;
+        }
+
+    /* Report Form */
     .report-form {
-        margin-bottom: 1.5rem;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 10px;
+        padding: 2.5rem;
     }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .form-row .full-width {
+            grid-column: 1 / -1;
+        }
 
     .form-group {
-        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
     }
 
-    label {
-        font-size: 1rem;
-        color: #555555;
-    }
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+            .form-group label i {
+                color: #6DBAA3;
+                font-size: 1rem;
+            }
 
     .form-control {
         width: 100%;
-        padding: 10px;
-        font-size: 1rem;
-        border-radius: 8px;
-        border: 1px solid #ced4da;
-        box-sizing: border-box;
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        background-color: #F9FAFB;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        color: #2D3748;
     }
 
-    .btn-submit {
-        background-color: #03041c;
-        border: none;
-        padding: 10px 20px;
+        .form-control:focus {
+            border-color: #6DBAA3;
+            background-color: #FFFFFF;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(109, 186, 163, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #9CA3AF;
+        }
+
+    /* Report Type Selector */
+    .report-type-selector {
+        position: relative;
+    }
+
+        .report-type-selector select {
+            appearance: none;
+            padding-right: 3rem;
+            cursor: pointer;
+        }
+
+    .select-arrow {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6B7280;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .report-type-selector.selected .select-arrow {
+        color: #6DBAA3;
+        animation: bounce 0.3s ease;
+    }
+
+    @@keyframes bounce {
+        0%, 100%
+
+    {
+        transform: translateY(-50%);
+    }
+
+    50% {
+        transform: translateY(-30%);
+    }
+
+    }
+
+    /* Info Banner */
+    .info-banner {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #E8F5F0, #D1F0E4);
+        border-left: 4px solid #6DBAA3;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        color: #2D5F4F;
+        font-size: 0.9rem;
+    }
+
+        .info-banner i {
+            font-size: 1.25rem;
+            color: #6DBAA3;
+        }
+
+    /* Generate Button */
+    .btn-generate {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #7FD858 0%, #6DBAA3 100%);
         color: white;
-        font-size: 1.2rem;
-        border-radius: 8px;
-        width: 100%;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.3);
     }
 
-    .btn-submit:hover {
-        background-color: #fff;
-            color: #03041c;
-            border: 1px solid #03041c;
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 216, 88, 0.4);
+        }
+
+        .btn-generate i {
+            font-size: 1.1rem;
+        }
+
+    /* Reports Card */
+    .reports-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
     }
 
-    /* Table Styling */
-    .table {
+    .reports-count {
+        display: flex;
+        align-items: center;
+    }
+
+    .count-badge {
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #7FD858, #6DBAA3);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+        .count-badge.empty {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+
+    .card-body {
+        padding: 0;
+    }
+
+    /* Reports Table */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .reports-table {
         width: 100%;
-        margin-top: 1.5rem;
         border-collapse: collapse;
     }
 
-    .table-header {
-        background-color: #f1f3f5;
+        .reports-table thead {
+            background: linear-gradient(90deg, #2D5F4F 0%, #1a4035 100%);
+        }
+
+        .reports-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+            .reports-table th.text-center {
+                text-align: center;
+            }
+
+            .reports-table th i {
+                margin-right: 0.5rem;
+                opacity: 0.8;
+            }
+
+        .reports-table tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+            transition: all 0.2s ease;
+        }
+
+            .reports-table tbody tr:hover {
+                background-color: #F9FAFB;
+            }
+
+            .reports-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+        .reports-table td {
+            padding: 1.25rem 1.5rem;
+            font-size: 0.9rem;
+            color: #4B5563;
+            vertical-align: middle;
+        }
+
+            .reports-table td.text-center {
+                text-align: center;
+            }
+
+    /* Report Name Cell */
+    .report-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 
-    .table th, .table td {
-        padding: 12px;
-        border: 1px solid #dee2e6;
-        text-align: left;
+    .file-icon {
+        font-size: 1.5rem;
+        color: #dc3545;
     }
 
-    .table-hover tbody tr:hover {
-        background-color: #f9fafb;
+    .report-name-cell span {
+        font-weight: 600;
+        color: #2D3748;
     }
 
-    /* Link Styling */
-    .link-view-report {
+    /* Type Badges */
+    .type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .claims-badge {
+        background: rgba(109, 186, 163, 0.15);
+        color: #2D5F4F;
+    }
+
+    .payments-badge {
+        background: rgba(127, 216, 88, 0.15);
+        color: #2D8C3E;
+    }
+
+    .type-badge i {
+        font-size: 0.9rem;
+    }
+
+    /* Date Range Cell */
+    .date-range-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #4B5563;
+        font-weight: 500;
+    }
+
+    .date-arrow {
+        color: #9CA3AF;
+        font-size: 0.75rem;
+    }
+
+    /* View Report Button */
+    .btn-view-report {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        background: linear-gradient(135deg, #6DBAA3, #7FD858);
+        color: white;
         text-decoration: none;
-        color: #03041c;
-        transition: color 0.3s;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(109, 186, 163, 0.2);
     }
 
-    .link-view-report:hover {
-        color: #212529;
-        text-decoration: underline;
+        .btn-view-report:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(109, 186, 163, 0.3);
+        }
+
+        .btn-view-report i {
+            font-size: 1rem;
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
     }
 
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, #E8F5F0, #D1F0E4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
+        .empty-icon i {
+            font-size: 3rem;
+            color: #6DBAA3;
+        }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        color: #2D3748;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: #9CA3AF;
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .empty-graphic {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+        .empty-graphic i {
+            font-size: 2rem;
+            color: #D1D5DB;
+            animation: float 3s ease-in-out infinite;
+        }
+
+            .empty-graphic i:nth-child(2) {
+                animation-delay: 0.5s;
+            }
+
+            .empty-graphic i:nth-child(3) {
+                animation-delay: 1s;
+            }
+
+    @@keyframes float {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    }
+
+    /* Custom Notification */
+    .custom-notification {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 10000;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        max-width: 400px;
+    }
+
+        .custom-notification.show {
+            transform: translateX(0);
+        }
+
+        .custom-notification.warning {
+            border-left: 4px solid #FFA726;
+        }
+
+        .custom-notification.success {
+            border-left: 4px solid #7FD858;
+        }
+
+        .custom-notification i:first-child {
+            font-size: 1.5rem;
+        }
+
+        .custom-notification.warning i:first-child {
+            color: #FFA726;
+        }
+
+        .custom-notification.success i:first-child {
+            color: #7FD858;
+        }
+
+        .custom-notification span {
+            flex: 1;
+            color: #2D3748;
+            font-weight: 500;
+        }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #9CA3AF;
+        cursor: pointer;
+        font-size: 1.25rem;
+        padding: 0;
+        transition: color 0.2s;
+    }
+
+        .close-btn:hover {
+            color: #4B5563;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 1024px) {
+        .form-row
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-table {
+        font-size: 0.85rem;
+    }
+
+        .reports-table th,
+        .reports-table td {
+            padding: 0.875rem 1rem;
+        }
+
+    }
+
+    @@media (max-width: 768px) {
+        .header-content
+
+    {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .report-form {
+        padding: 1.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .custom-notification {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+
+    .table-responsive {
+        border-radius: 0;
+    }
+
+    .reports-table {
+        font-size: 0.8rem;
+    }
+
+        .reports-table th,
+        .reports-table td {
+            padding: 0.75rem 0.5rem;
+        }
+
+    .btn-view-report {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .header-icon
+
+    {
+        width: 60px;
+        height: 60px;
+    }
+
+    .header-icon i {
+        font-size: 1.75rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.25rem;
+    }
+
+    .report-name-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .date-range-cell {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .date-arrow {
+        transform: rotate(90deg);
+    }
+
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+
+    }
 </style>

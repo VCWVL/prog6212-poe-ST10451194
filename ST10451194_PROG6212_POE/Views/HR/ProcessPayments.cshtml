@@ -1,147 +1,410 @@
-﻿@model ST10451194_PROG6212_POE.Models.ProcessPaymentsViewModel
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Monthly Claim System</title>
 
-<div class="container-payments">
-    <h1>Process Payments</h1>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ST10451194_PROG6212_POE.styles.css" asp-append-version="true" />
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Claim ID</th>
-                <th>Lecturer Name</th>
-                <th>Total Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var claim in Model.Claims)
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #E8F5F0;
+            color: #2D3748;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(180deg, #2D5F4F 0%, #1a4035 100%);
+            padding: 2rem 0;
+            z-index: 1000;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+            .sidebar-brand h3 {
+                color: #FFFFFF;
+                font-size: 1.25rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .sidebar-brand i {
+                font-size: 1.5rem;
+                color: #7FD858;
+            }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+            .nav-link i {
+                width: 24px;
+                margin-right: 1rem;
+                font-size: 1.1rem;
+            }
+
+            .nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: #FFFFFF;
+                border-left-color: #7FD858;
+            }
+
+            .nav-link.active {
+                background-color: rgba(127, 216, 88, 0.15);
+                color: #FFFFFF;
+                border-left-color: #7FD858;
+            }
+
+        /* User Profile Section in Sidebar */
+        .sidebar-user {
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #FFFFFF;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7FD858, #6DBAA3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2D3748;
+            margin: 0;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn, .user-menu-btn {
+            background: transparent;
+            border: none;
+            color: #2D5F4F;
+            font-size: 1.25rem;
+            cursor: pointer;
+            position: relative;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        }
+
+            .notification-btn:hover, .user-menu-btn:hover {
+                color: #7FD858;
+            }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #dc3545;
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        footer {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #6B7280;
+            font-size: 0.875rem;
+            border-top: 1px solid #E5E7EB;
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .sidebar
+
+        {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .mobile-toggle {
+            display: block;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #2D5F4F;
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            cursor: pointer;
+        }
+
+        }
+
+        @@media (min-width: 769px) {
+            .mobile-toggle
+
+        {
+            display: none;
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <h3>
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                ClaimSystem
+            </h3>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            @if (User.IsInRole("Lecturer"))
             {
-                <tr>
-                    <td>@claim.ClaimId</td>
-                    <td>@claim.ApplicationUser.Firstname @claim.ApplicationUser.Lastname</td>
-                    <td>R @claim.TotalAmount.ToString("N2")</td>
-                    <td>@claim.Status</td>
-                    <td>
-                        <form asp-action="ProcessPayment" method="post">
-                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                            <button type="submit" class="btn-process btn-process-success">Process Payment</button>
-                        </form>
-                    </td>
-                </tr>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Lecturer" asp-action="Dashboard">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Claim" asp-action="Create">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Submit Claim</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Claim" asp-action="TrackClaims">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Track Claims</span>
+                    </a>
+                </li>
             }
-        </tbody>
-    </table>
-    @if (!Model.Claims.Any())
-    {
-        <p>No pending payments to review at this time.</p>
-    }
+            else if (User.IsInRole("Programme Coordinator"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="ProgrammeCoordinator" asp-action="Index">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <span>Process Claims</span>
+                    </a>
+                </li>
+            }
+            else if (User.IsInRole("Academic Manager"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link active" asp-controller="AcademicManager" asp-action="Index">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <span>Process Claims</span>
+                    </a>
+                </li>
+            }
+            else if (User.IsInRole("HR Manager"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="HR" asp-action="Dashboard">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <span>HR Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="HR" asp-action="ProcessPayments">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                        <span>Process Payments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="HR" asp-action="GenerateReport">
+                        <i class="fa-solid fa-file-chart-line"></i>
+                        <span>Generate Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="ManageUsers" asp-action="Index">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Manage Users</span>
+                    </a>
+                </li>
+            }
+        </ul>
 
-    <div class="summary">
-        <h2>Payment Summary</h2>
-        <p>Total Claims Processed: @Model.TotalClaims</p>
-        <p>Total Amount to be Paid: R @Model.TotalAmountToPay.ToString("N2")</p>
-        <p>Pending Payments: @Model.PendingPayments</p>
+        <div class="sidebar-user">
+            <partial name="_LoginPartial" />
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title">@ViewData["Title"]</h1>
+            <div class="top-bar-actions">
+                <button class="notification-btn" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                </button>
+            </div>
+        </div>
+
+        <main class="content-wrapper">
+            @RenderBody()
+        </main>
+
+        <footer>
+            &copy; 2025 Monthly Claim System - Kyle Pillay - PROG6212 - POE - PART 3
+        </footer>
     </div>
-</div>
 
-  <style>
-    body {
-        font-family: Arial, sans-serif;
-        /* background-color: #03041c; */
-        background: url('/images/temple4.jpg') no-repeat center center fixed;
-        background-size: cover;
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
-    .container-payments {
-        max-width: 1200px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
-    h1 {
-        text-align: center;
-        color: #03041c;
-        margin-bottom: 30px;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-        .table th, .table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-            color: #03041c;
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
-        .table th {
-            background-color: #f2f2f2;
-            color: #03041c;
-            font-weight: bold;
-        }
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function (event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
 
-        .table td {
-            background-color: #ffffff;
-        }
-
-        .table a {
-            color: #03041c;
-            text-decoration: underline;
-        }
-
-            .table a:hover {
-                color: #03041c;
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
             }
+        });
+    </script>
 
-    .btn-process {
-        padding: 10px 15px;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease-in-out;
-        text-decoration: none;
-        text-align: center;
-    }
-
-    .btn-process-success {
-        background-color: #28a745;
-        color: #ffffff;
-    }
-
-        .btn-process-success:hover {
-            background-color: #218838;
-        }
-
-    .summary {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-    }
-
-        .summary h2 {
-            margin-top: 0;
-            font-size: 22px;
-            color: #03041c;
-        }
-
-        .summary p {
-            font-size: 18px;
-            color: #666;
-        }
- </style>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

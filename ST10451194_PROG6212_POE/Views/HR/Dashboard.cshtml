@@ -1,156 +1,957 @@
 ﻿@model ST10451194_PROG6212_POE.Models.DashboardViewModel
 
-<div class="container-dashboard">
-    <h1 style="color:#fff;">HR Dashboard</h1>
+@{
+    ViewData["Title"] = "HR Dashboard";
+}
 
-    <!-- Claims Processed Section -->
-    <div class="dashboard-section">
-        <div class="dashboard-card">
-            <h2>Claims Processed</h2>
-            <div class="card-content">
-                <div class="card-item">
-                    <h3>@Model.TotalClaims</h3>
-                    <p>Total Claims</p>
+<div class="hr-dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="header-text">
+                <h1>HR Dashboard</h1>
+                <p>Comprehensive overview of claims, payments, and system management</p>
+            </div>
+        </div>
+        <div class="header-date">
+            <i class="fa-solid fa-calendar"></i>
+            <span>@DateTime.Now.ToString("MMMM dd, yyyy")</span>
+        </div>
+    </div>
+
+    <!-- Key Metrics Overview -->
+    <div class="metrics-grid">
+        <!-- Total Claims Metric -->
+        <div class="metric-card total-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="metric-content">
+                <span class="metric-label">Total Claims</span>
+                <span class="metric-value">@Model.TotalClaims</span>
+                <span class="metric-badge">All time</span>
+            </div>
+        </div>
+
+        <!-- Pending Claims Metric -->
+        <div class="metric-card pending-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="metric-content">
+                <span class="metric-label">Pending Review</span>
+                <span class="metric-value">@Model.PendingClaims</span>
+                <span class="metric-badge">Awaiting action</span>
+            </div>
+        </div>
+
+        <!-- Approved Claims Metric -->
+        <div class="metric-card approved-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="metric-content">
+                <span class="metric-label">Approved</span>
+                <span class="metric-value">@Model.ApprovedClaims</span>
+                <span class="metric-badge">Processed</span>
+            </div>
+        </div>
+
+        <!-- Total Payments Metric -->
+        <div class="metric-card payment-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="metric-content">
+                <span class="metric-label">Total Payments</span>
+                <span class="metric-value">R @Model.TotalPayments.ToString("N2")</span>
+                <span class="metric-badge">All time</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Claims Processing Section -->
+        <div class="dashboard-card claims-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <h2>Claims Processing</h2>
                 </div>
-                <div class="card-item">
-                    <h3>@Model.PendingClaims</h3>
-                    <p>Pending Review</p>
+                <div class="card-badge">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    Active
                 </div>
-                <div class="card-item">
-                    <h3>@Model.ApprovedClaims</h3>
-                    <p>Approved</p>
+            </div>
+            <div class="card-body">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-circle total-stat">
+                            <span class="stat-number">@Model.TotalClaims</span>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Claims</span>
+                            <span class="stat-sublabel">Lifetime</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <div class="stat-item">
+                        <div class="stat-circle pending-stat">
+                            <span class="stat-number">@Model.PendingClaims</span>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pending</span>
+                            <span class="stat-sublabel">Need review</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <div class="stat-item">
+                        <div class="stat-circle approved-stat">
+                            <span class="stat-number">@Model.ApprovedClaims</span>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Approved</span>
+                            <span class="stat-sublabel">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                @{
+                    var approvalRate = Model.TotalClaims > 0
+                    ? ((double)Model.ApprovedClaims / Model.TotalClaims * 100)
+                    : 0;
+                }
+
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Approval Rate</span>
+                        <span class="progress-percentage">@approvalRate.ToString("F1")%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: @approvalRate.ToString("F1")%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Overview Section -->
+        <div class="dashboard-card payments-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fa-solid fa-money-bill-trend-up"></i>
+                    <h2>Payments Overview</h2>
+                </div>
+                <div class="card-badge">
+                    <i class="fa-solid fa-circle"></i>
+                    Financial
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="payment-item total-payment">
+                    <div class="payment-icon">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                    <div class="payment-details">
+                        <span class="payment-label">Total Payments</span>
+                        <span class="payment-amount">R @Model.TotalPayments.ToString("N2")</span>
+                        <span class="payment-note">Cumulative amount</span>
+                    </div>
+                </div>
+
+                <div class="payment-item pending-payment">
+                    <div class="payment-icon">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                    <div class="payment-details">
+                        <span class="payment-label">Pending Payments</span>
+                        <span class="payment-amount">R @Model.PendingPayments.ToString("N2")</span>
+                        <span class="payment-note">Awaiting processing</span>
+                    </div>
+                </div>
+
+                <div class="payment-item completed-payment">
+                    <div class="payment-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="payment-details">
+                        <span class="payment-label">Completed Payments</span>
+                        <span class="payment-amount">R @Model.CompletedPayments.ToString("N2")</span>
+                        <span class="payment-note">Successfully disbursed</span>
+                    </div>
+                </div>
+
+                @{
+                    double completionRate = Model.TotalPayments > 0
+                    ? (double)(Model.CompletedPayments / Model.TotalPayments * 100)
+                    : 0;
+                }
+
+
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Completion Rate</span>
+                        <span class="progress-percentage">@completionRate.ToString("F1")%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill payment-fill" style="width: @completionRate.ToString("F1")%"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Payments Overview Section -->
-    <div class="dashboard-section">
-        <div class="dashboard-card">
-            <h2>Payments Overview</h2>
-            <div class="card-content">
-                <div class="card-item">
-                    <h3>R @Model.TotalPayments</h3>
-                    <p>Total Payments</p>
-                </div>
-                <div class="card-item">
-                    <h3>R @Model.PendingPayments</h3>
-                    <p>Pending Payments</p>
-                </div>
-                <div class="card-item">
-                    <h3>R @Model.CompletedPayments</h3>
-                    <p>Completed Payments</p>
-                </div>
+    <!-- Action Cards Grid -->
+    <div class="actions-grid">
+        <!-- Reports Action Card -->
+        <div class="action-card reports-action">
+            <div class="action-icon-large">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div class="action-content">
+                <h3>Generate Reports</h3>
+                <p>Create detailed analytical reports on claims and payment data for comprehensive insights</p>
+                <a href="/Hr/GenerateReport" class="btn-action btn-primary">
+                    <i class="fa-solid fa-file-chart-line"></i>
+                    View Reports
+                </a>
+            </div>
+            <div class="action-badge">
+                <i class="fa-solid fa-sparkles"></i>
             </div>
         </div>
-    </div>
 
-    <!-- Reports Section -->
-    <div class="dashboard-section">
-        <div class="dashboard-card">
-            <h2>Reports</h2>
-            <p>Generate detailed reports on claims and payments.</p>
-            <a href="/Hr/GenerateReport" class="btn-reports"><i class="fa fa-bar-chart" aria-hidden="true"></i> View Reports</a>
+        <!-- Manage Users Action Card -->
+        <div class="action-card users-action">
+            <div class="action-icon-large">
+                <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <div class="action-content">
+                <h3>Manage Users</h3>
+                <p>Oversee user accounts, assign roles, and maintain system access levels across the platform</p>
+                <a href="/ManageUsers/Index" class="btn-action btn-secondary">
+                    <i class="fa-solid fa-users-viewfinder"></i>
+                    View Users
+                </a>
+            </div>
+            <div class="action-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
         </div>
-    </div>
 
-    <!-- Manaage Users Section -->
-    <div class="dashboard-section">
-        <div class="dashboard-card">
-            <h2>Manage Users</h2>
-            <p>Manage List of users and maintian access levels</p>
-            <a href="/ManageUsers/Index" class="btn-reports"><i class="fa fa-users" aria-hidden="true"></i> View Users</a>
+        <!-- Process Payments Action Card -->
+        <div class="action-card payments-action">
+            <div class="action-icon-large">
+                <i class="fa-solid fa-money-check-dollar"></i>
+            </div>
+            <div class="action-content">
+                <h3>Process Payments</h3>
+                <p>Review and process pending payments for approved claims efficiently and accurately</p>
+                <a href="/HR/ProcessPayments" class="btn-action btn-success">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                    Process Now
+                </a>
+            </div>
+            <div class="action-badge">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
         </div>
     </div>
 </div>
 
-
-
-
-<!-- Add your styles here -->
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        /* background-color: #03041c; */
-        background: url('/images/temple3.jpg') no-repeat center center fixed;
-        background-size: cover;
-        margin: 0;
-        padding: 0;
-    }
-
-    .container-dashboard {
-        max-width: 1200px;
+    .hr-dashboard-container {
+        max-width: 1400px;
         margin: 0 auto;
-        padding: 20px;
     }
 
-    h1 {
-        text-align: center;
-        font-size: 2.5em;
-        margin-bottom: 20px;
-    }
-
-    .dashboard-section {
+    /* Dashboard Header */
+    .dashboard-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 30px;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #2D5F4F 0%, #1a4035 100%);
+        border-radius: 20px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(45, 95, 79, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+        .header-icon i {
+            font-size: 2rem;
+            color: #7FD858;
+        }
+
+    .header-text h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .header-text p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .header-date {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+    }
+
+        .header-date i {
+            font-size: 1.1rem;
+            color: #7FD858;
+        }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .metric-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            opacity: 0.05;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+            .metric-card:hover::before {
+                transform: scale(1.5);
+            }
+
+    .total-card {
+        border-color: #6DBAA3;
+    }
+
+        .total-card::before {
+            background: #6DBAA3;
+        }
+
+    .pending-card {
+        border-color: #FFA726;
+    }
+
+        .pending-card::before {
+            background: #FFA726;
+        }
+
+    .approved-card {
+        border-color: #7FD858;
+    }
+
+        .approved-card::before {
+            background: #7FD858;
+        }
+
+    .payment-card {
+        border-color: #2D5F4F;
+    }
+
+        .payment-card::before {
+            background: #2D5F4F;
+        }
+
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        flex-shrink: 0;
+    }
+
+    .total-card .metric-icon {
+        background: rgba(109, 186, 163, 0.15);
+        color: #6DBAA3;
+    }
+
+    .pending-card .metric-icon {
+        background: rgba(255, 167, 38, 0.15);
+        color: #FFA726;
+    }
+
+    .approved-card .metric-icon {
+        background: rgba(127, 216, 88, 0.15);
+        color: #7FD858;
+    }
+
+    .payment-card .metric-icon {
+        background: rgba(45, 95, 79, 0.15);
+        color: #2D5F4F;
+    }
+
+    .metric-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .metric-label {
+        font-size: 0.9rem;
+        color: #6B7280;
+        font-weight: 500;
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2D3748;
+        line-height: 1;
+    }
+
+    .metric-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: #F3F4F6;
+        color: #6B7280;
+        font-size: 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+    /* Content Grid */
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
     }
 
     .dashboard-card {
-        background-color: #f4f4f4;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        padding: 20px;
-        text-align: center;
-        transition: transform 0.3s ease;
+        background: #FFFFFF;
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
 
         .dashboard-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
-    h2 {
-        font-size: 1.8em;
-        margin-bottom: 15px;
-    }
-
-    .card-content {
+    .card-header {
+        padding: 1.75rem 2rem;
+        background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+        border-bottom: 1px solid #E5E7EB;
         display: flex;
         justify-content: space-between;
+        align-items: center;
     }
 
-    .card-item {
-        width: 30%;
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
 
-        .card-item h3 {
-            font-size: 1.5em;
-            color: #333;
+        .card-title i {
+            font-size: 1.5rem;
+            color: #6DBAA3;
         }
 
-        .card-item p {
-            font-size: 1em;
-            color: #777;
+        .card-title h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2D3748;
         }
 
-    .btn-reports {
-        background-color: #03041c;
-        border: none;
-        padding: 12px 20px;
+    .card-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #E8F5F0;
+        color: #2D5F4F;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+        .card-badge i {
+            font-size: 0.75rem;
+        }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .stat-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .total-stat {
+        background: linear-gradient(135deg, #6DBAA3, #7FD858);
         color: white;
-        font-size: 1rem;
-        border-radius: 8px;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.3s ease;
     }
 
-        .btn-reports:hover {
-            background-color: #fff;
-            color: #03041c;
-            border: 1px solid #03041c;
+    .pending-stat {
+        background: linear-gradient(135deg, #FFA726, #FFD54F);
+        color: white;
+    }
+
+    .approved-stat {
+        background: linear-gradient(135deg, #7FD858, #6DBAA3);
+        color: white;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .stat-label {
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 0.95rem;
+    }
+
+    .stat-sublabel {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+    }
+
+    .stat-divider {
+        width: 1px;
+        height: 60px;
+        background: #E5E7EB;
+    }
+
+    /* Payment Items */
+    .payment-item {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .payment-item:hover {
+            transform: translateX(5px);
         }
 
+    .total-payment {
+        background: linear-gradient(135deg, rgba(109, 186, 163, 0.1), rgba(127, 216, 88, 0.1));
+        border-left: 4px solid #6DBAA3;
+    }
 
+    .pending-payment {
+        background: linear-gradient(135deg, rgba(255, 167, 38, 0.1), rgba(255, 213, 79, 0.1));
+        border-left: 4px solid #FFA726;
+    }
+
+    .completed-payment {
+        background: linear-gradient(135deg, rgba(127, 216, 88, 0.1), rgba(109, 186, 163, 0.1));
+        border-left: 4px solid #7FD858;
+    }
+
+    .payment-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .total-payment .payment-icon {
+        background: rgba(109, 186, 163, 0.2);
+        color: #2D5F4F;
+    }
+
+    .pending-payment .payment-icon {
+        background: rgba(255, 167, 38, 0.2);
+        color: #C77700;
+    }
+
+    .completed-payment .payment-icon {
+        background: rgba(127, 216, 88, 0.2);
+        color: #2D8C3E;
+    }
+
+    .payment-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .payment-label {
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 0.95rem;
+    }
+
+    .payment-amount {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2D5F4F;
+        line-height: 1;
+    }
+
+    .payment-note {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+    }
+
+    /* Progress Section */
+    .progress-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #E5E7EB;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .progress-label {
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 0.95rem;
+    }
+
+    .progress-percentage {
+        font-weight: 700;
+        color: #6DBAA3;
+        font-size: 1.1rem;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background: #F3F4F6;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #7FD858 0%, #6DBAA3 100%);
+        border-radius: 10px;
+        transition: width 1s ease;
+        box-shadow: 0 2px 4px rgba(127, 216, 88, 0.3);
+    }
+
+    .payment-fill {
+        background: linear-gradient(90deg, #6DBAA3 0%, #2D5F4F 100%);
+        box-shadow: 0 2px 4px rgba(109, 186, 163, 0.3);
+    }
+
+    /* Actions Grid */
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .action-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+        .action-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+
+    .action-icon-large {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .reports-action .action-icon-large {
+        background: linear-gradient(135deg, #6DBAA3, #7FD858);
+        color: white;
+    }
+
+    .users-action .action-icon-large {
+        background: linear-gradient(135deg, #2D5F4F, #1a4035);
+        color: white;
+    }
+
+    .payments-action .action-icon-large {
+        background: linear-gradient(135deg, #7FD858, #6DBAA3);
+        color: white;
+    }
+
+    .action-content {
+        flex: 1;
+    }
+
+        .action-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-content p {
+            color: #6B7280;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+    .action-badge {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #F3F4F6;
+        color: #9CA3AF;
+        font-size: 1rem;
+    }
+
+    /* Action Buttons */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6DBAA3 0%, #7FD858 100%);
+        color: white;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(109, 186, 163, 0.3);
+        }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #2D5F4F 0%, #1a4035 100%);
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(45, 95, 79, 0.3);
+        }
+
+    .btn-success {
+        background: linear-gradient(135deg, #7FD858 0%, #6DBAA3 100%);
+        color: white;
+    }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(127, 216, 88, 0.3);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .content-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .header-date {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .stat-divider {
+        width: 60px;
+        height: 1px;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-card {
+        padding: 1.5rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .dashboard-header
+
+    {
+        padding: 1.5rem;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+        .header-icon i {
+            font-size: 1.75rem;
+        }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .metric-card {
+        padding: 1.25rem;
+    }
+
+    .metric-value {
+        font-size: 1.75rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .payment-amount {
+        font-size: 1.5rem;
+    }
+
+    }
 </style>

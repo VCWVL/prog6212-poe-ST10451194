@@ -1,188 +1,1192 @@
 ﻿@model IEnumerable<ST10451194_PROG6212_POE.Models.Claim>
 
-<div class="container-dashboard">
-    <h2>Lecturer Dashboard</h2>
+@{
+    ViewData["Title"] = "Lecturer Dashboard";
 
-    <div class="filter-section">
+    // Calculate statistics
+    var totalClaims = Model.Count();
+    var totalEarnings = Model.Sum(c => c.TotalAmount);
+    var pendingClaims = Model.Count(c => c.Status == "Pending");
+    var approvedClaims = Model.Count(c => c.Status.Contains("Approved"));
+    var totalHours = Model.Sum(c => c.HoursWorked);
+}
+
+<div class="lecturer-dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="header-text">
+                <h1>Lecturer Dashboard</h1>
+                <p>Overview of your claims, submissions, and earnings</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="/Claim/Create" class="btn-header-action">
+                <i class="fa-solid fa-plus-circle"></i>
+                Submit New Claim
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card total-card">
+            <div class="stat-icon">
+                <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Total Claims</span>
+                <span class="stat-value">@totalClaims</span>
+                <span class="stat-trend">
+                    <i class="fa-solid fa-clock"></i>
+                    All time
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card earnings-card">
+            <div class="stat-icon">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Total Earnings</span>
+                <span class="stat-value">R @totalEarnings.ToString("N2")</span>
+                <span class="stat-trend">
+                    <i class="fa-solid fa-coins"></i>
+                    Cumulative
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card pending-card">
+            <div class="stat-icon">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Pending</span>
+                <span class="stat-value">@pendingClaims</span>
+                <span class="stat-trend">
+                    <i class="fa-solid fa-spinner"></i>
+                    In review
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card approved-card">
+            <div class="stat-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Approved</span>
+                <span class="stat-value">@approvedClaims</span>
+                <span class="stat-trend">
+                    <i class="fa-solid fa-check-double"></i>
+                    Processed
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-card">
+        <div class="filter-header">
+            <div class="filter-title">
+                <i class="fa-solid fa-filter"></i>
+                <span>Filter Claims</span>
+            </div>
+            <div class="filter-stats">
+                Showing @Model.Count() of @totalClaims claims
+            </div>
+        </div>
         <form method="get" class="filter-form">
-            <label for="start-date">Start Date:</label>
-            <input type="date" id="start-date" name="startDate" value="@Context.Request.Query["startDate"]" class="form-control" />
-            <label for="end-date">End Date:</label>
-            <input type="date" id="end-date" name="endDate" value="@Context.Request.Query["endDate"]" class="form-control" />
-            <button type="submit" class="btn-filter">Filter</button>
+            <div class="filter-group">
+                <label for="start-date">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    Start Date
+                </label>
+                <input type="date"
+                       id="start-date"
+                       name="startDate"
+                       value="@Context.Request.Query["startDate"]"
+                       class="filter-input" />
+            </div>
+
+            <div class="filter-group">
+                <label for="end-date">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    End Date
+                </label>
+                <input type="date"
+                       id="end-date"
+                       name="endDate"
+                       value="@Context.Request.Query["endDate"]"
+                       class="filter-input" />
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Apply Filter
+                </button>
+                <a href="/Lecturer/Dashboard" class="btn-clear">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    Clear
+                </a>
+            </div>
         </form>
     </div>
 
-    <table class="table table-hover">
-        <thead class="table-header">
-            <tr>
-                <th>Claim ID</th>
-                <th>Date Submitted</th>
-                <th>Claim For</th> <!-- New column header -->
-                <th>Hours Worked</th>
-                <th>Hourly Rate</th>
-                <th>Total Amount</th>
-                <th>Supporting Documents</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var claim in Model)
-            {
-                <tr>
-                    <td>@claim.ClaimId</td>
-                    <td>@claim.DateSubmitted.ToShortDateString()</td>
-                    <td>@claim.StartDate.ToString("MMM yyyy")</td> <!-- Displaying Claim For -->
-                    <td>@claim.HoursWorked</td>
-                    <td>R @claim.HourlyRate</td>
-                    <td>R @claim.TotalAmount</td>
-                    <td>
-                        @if (claim.Documents != null && claim.Documents.Any())
-                        {
-                            <ul style="list-style-type: none;">
-                                @foreach (var doc in claim.Documents)
-                                {
-                                    <li>
-                                        <i class="fa-solid fa-download"></i>
-                                        <a href="@Url.Content("~/uploads/" + doc.DocumentName)" target="_blank" style="text-decoration: none; color: #212529;">View Document</a>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <span>No Documents</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <!-- Claims Table Card -->
+    <div class="table-card">
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fa-solid fa-table-list"></i>
+                <h2>My Claims</h2>
+            </div>
+            <div class="card-actions">
+                <a href="/Claim/TrackClaims" class="btn-track">
+                    <i class="fa-solid fa-list-check"></i>
+                    Track Status
+                </a>
+            </div>
+        </div>
 
-    <div class="action-section">
-        <a href="/Claim/Create" class="btn-submit"><i class="fa-solid fa-upload"></i> Submit New Claim</a>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="claims-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fa-solid fa-hashtag"></i>
+                                    Claim ID
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    Submitted
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                    Claim Period
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-clock"></i>
+                                    Hours
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                    Rate
+                                </th>
+                                <th>
+                                    <i class="fa-solid fa-sack-dollar"></i>
+                                    Total
+                                </th>
+                                <th class="text-center">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    Documents
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model)
+                            {
+                                <tr class="claim-row">
+                                    <td>
+                                        <span class="claim-id-badge">#@claim.ClaimId</span>
+                                    </td>
+                                    <td>
+                                        <span class="date-text">@claim.DateSubmitted.ToString("dd MMM yyyy")</span>
+                                    </td>
+                                    <td>
+                                        <span class="period-badge">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                            @claim.StartDate.ToString("MMM yyyy")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="hours-badge">@claim.HoursWorked hrs</span>
+                                    </td>
+                                    <td>
+                                        <span class="rate-text">R @claim.HourlyRate.ToString("N2")</span>
+                                    </td>
+                                    <td>
+                                        <span class="amount-text">R @claim.TotalAmount.ToString("N2")</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (claim.Documents != null && claim.Documents.Any())
+                                        {
+                                            <div class="documents-cell">
+                                                @foreach (var doc in claim.Documents)
+                                                {
+                                                    <a href="@Url.Content("~/uploads/" + doc.DocumentName)"
+                                                       target="_blank"
+                                                       class="doc-link"
+                                                       title="View @doc.DocumentName">
+                                                        <i class="fa-solid fa-file-pdf"></i>
+                                                        <span>View</span>
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="no-docs">No documents</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Summary -->
+                <div class="table-summary">
+                    <div class="summary-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span class="summary-label">Total Hours:</span>
+                        <span class="summary-value">@totalHours hrs</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-item">
+                        <i class="fa-solid fa-wallet"></i>
+                        <span class="summary-label">Total Earnings:</span>
+                        <span class="summary-value">R @totalEarnings.ToString("N2")</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-inbox"></i>
+                    </div>
+                    <h3>No Claims Found</h3>
+                    <p>You haven't submitted any claims yet. Get started by creating your first claim!</p>
+                    <a href="/Claim/Create" class="btn-create-first">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        Create Your First Claim
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Quick Actions Card -->
+    <div class="quick-actions-card">
+        <div class="actions-header">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Quick Actions</span>
+        </div>
+        <div class="actions-grid">
+            <a href="/Claim/Create" class="action-button submit-action">
+                <div class="action-icon">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                </div>
+                <div class="action-text">
+                    <span class="action-title">Submit Claim</span>
+                    <span class="action-desc">Create a new claim</span>
+                </div>
+            </a>
+
+            <a href="/Claim/TrackClaims" class="action-button track-action">
+                <div class="action-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="action-text">
+                    <span class="action-title">Track Claims</span>
+                    <span class="action-desc">View claim status</span>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Animate stat cards on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = `slideUp 0.5s ease-out ${index * 0.1}s both`;
+                }, 100);
+            });
+
+            // Add date validation
+            const startDate = document.getElementById('start-date');
+            const endDate = document.getElementById('end-date');
+
+            endDate.addEventListener('change', function() {
+                if (startDate.value && endDate.value) {
+                    if (new Date(endDate.value) < new Date(startDate.value)) {
+                        alert('End date cannot be before start date');
+                        endDate.value = '';
+                    }
+                }
+            });
+        });
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </script>
 }
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        /* background-color: #03041c; */
-        background: url('/images/temple3.jpg') no-repeat center center fixed;
-        background-size: cover;
-        margin: 0;
-        padding: 0;
+    .lecturer-dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    /* Container Styling */
-    .container-dashboard {
-        margin: 6rem auto;
-        width: 100%;
-        max-width: 1300px;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 1rem;
-        font-size: 2rem;
-    }
-
-    /* Filter Section */
-    .filter-section {
-        margin-bottom: 1.5rem;
-        background-color: #f9fafb;
-        padding: 10px;
-        border-radius: 8px;
-    }
-
-    .filter-form {
+    /* Dashboard Header */
+    .dashboard-header {
         display: flex;
-        align-items: center; /* Align items vertically */
-        justify-content: flex-start; /* Align items to the left */
-        gap: 10px; /* Space between items */
-    }
-
-    .filter-section label {
-        font-size: 1rem;
-    }
-
-    .form-control {
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #ced4da;
-        width: 150px; /* Adjust width to fit better */
-    }
-
-    .btn-filter {
-        background-color: #03041c;
-        border: none;
-        padding: 10px 15px;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #2D5F4F 0%, #1a4035 100%);
+        border-radius: 20px;
         color: white;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 20px rgba(45, 95, 79, 0.2);
+        flex-wrap: wrap;
+        gap: 1.5rem;
     }
 
-        .btn-filter:hover {
-            background-color: #555;
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex: 1;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+        .header-icon i {
+            font-size: 2rem;
+            color: #7FD858;
         }
 
-    /* Table Styling */
-    .table {
-        width: 100%;
-        border-collapse: collapse;
+    .header-text h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .header-text p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .header-actions .btn-header-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.75rem;
+        background: linear-gradient(135deg, #7FD858, #6DBAA3);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .btn-header-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(127, 216, 88, 0.4);
+    }
+
+    /* Statistics Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
         margin-bottom: 2rem;
     }
 
-        .table th, .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
+    .stat-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-    .table-header {
-        background-color: #f8f9fa;
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+            .stat-card:hover::before {
+                opacity: 1;
+            }
+
+    .total-card {
+        border-color: #6DBAA3;
     }
 
-    .table-hover tbody tr:hover {
-        background-color: #f1f3f5;
+    .earnings-card {
+        border-color: #7FD858;
     }
 
-    /* Action Section */
-    .action-section {
-        text-align: center;
+    .pending-card {
+        border-color: #FFA726;
     }
 
-    .btn-submit {
-        background-color: #03041c;
-        border: none;
-        padding: 12px 20px;
-        color: white;
+    .approved-card {
+        border-color: #2D8C3E;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        flex-shrink: 0;
+    }
+
+    .total-card .stat-icon {
+        background: rgba(109, 186, 163, 0.15);
+        color: #6DBAA3;
+    }
+
+    .earnings-card .stat-icon {
+        background: rgba(127, 216, 88, 0.15);
+        color: #7FD858;
+    }
+
+    .pending-card .stat-icon {
+        background: rgba(255, 167, 38, 0.15);
+        color: #FFA726;
+    }
+
+    .approved-card .stat-icon {
+        background: rgba(45, 140, 62, 0.15);
+        color: #2D8C3E;
+    }
+
+    .stat-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6B7280;
+        font-weight: 500;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2D3748;
+        line-height: 1;
+    }
+
+    .stat-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #9CA3AF;
+    }
+
+        .stat-trend i {
+            font-size: 0.75rem;
+        }
+
+    /* Filter Card */
+    .filter-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .filter-header {
+        padding: 1.25rem 1.75rem;
+        background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+        border-bottom: 1px solid #E5E7EB;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: #2D3748;
         font-size: 1rem;
-        border-radius: 8px;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.3s ease;
     }
 
-        .btn-submit:hover {
-            background-color: #fff;
-            color: #03041c;
-            border: 1px solid #03041c;
+        .filter-title i {
+            color: #6DBAA3;
+            font-size: 1.1rem;
         }
 
-    /* Icons Styling */
-    .fa-download {
-        margin-right: 5px;
-        color: #6c757d;
+    .filter-stats {
+        color: #6B7280;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .filter-form {
+        padding: 1.75rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 1.5rem;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .filter-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+            .filter-group label i {
+                color: #6DBAA3;
+            }
+
+    .filter-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        background: #F9FAFB;
+        font-size: 0.95rem;
+        color: #2D3748;
+        transition: all 0.3s ease;
+    }
+
+        .filter-input:focus {
+            border-color: #6DBAA3;
+            background: #FFFFFF;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(109, 186, 163, 0.1);
+        }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-filter,
+    .btn-clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, #6DBAA3, #7FD858);
+        color: white;
+        border: none;
+        box-shadow: 0 2px 8px rgba(109, 186, 163, 0.2);
+    }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(109, 186, 163, 0.3);
+        }
+
+    .btn-clear {
+        background: #FFFFFF;
+        color: #6B7280;
+        border: 2px solid #E5E7EB;
+    }
+
+        .btn-clear:hover {
+            background: #F9FAFB;
+            border-color: #D1D5DB;
+        }
+
+    /* Table Card */
+    .table-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .card-header {
+        padding: 1.75rem 2rem;
+        background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+        border-bottom: 1px solid #E5E7EB;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .card-title i {
+            font-size: 1.5rem;
+            color: #6DBAA3;
+        }
+
+        .card-title h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2D3748;
+        }
+
+    .card-actions .btn-track {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        background: #FFFFFF;
+        color: #2D5F4F;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-track:hover {
+        background: #F9FAFB;
+        border-color: #6DBAA3;
+        transform: translateY(-2px);
+    }
+
+    .card-body {
+        padding: 0;
+    }
+
+    /* Claims Table */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .claims-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .claims-table thead {
+            background: linear-gradient(90deg, #2D5F4F 0%, #1a4035 100%);
+        }
+
+        .claims-table th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+            .claims-table th.text-center {
+                text-align: center;
+            }
+
+            .claims-table th i {
+                margin-right: 0.5rem;
+                opacity: 0.8;
+            }
+
+        .claims-table tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+            transition: all 0.2s ease;
+        }
+
+            .claims-table tbody tr:hover {
+                background-color: #F9FAFB;
+            }
+
+            .claims-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+        .claims-table td {
+            padding: 1.25rem 1.25rem;
+            font-size: 0.9rem;
+            color: #4B5563;
+            vertical-align: middle;
+        }
+
+            .claims-table td.text-center {
+                text-align: center;
+            }
+
+    /* Table Cell Styles */
+    .claim-id-badge {
+        display: inline-block;
+        background: #E8F5F0;
+        color: #2D5F4F;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .date-text {
+        color: #4B5563;
+        font-weight: 500;
+    }
+
+    .period-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #FEF3C7;
+        color: #92400E;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+        .period-badge i {
+            font-size: 0.75rem;
+        }
+
+    .hours-badge {
+        display: inline-block;
+        background: #DBEAFE;
+        color: #1E40AF;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .rate-text {
+        color: #4B5563;
+        font-weight: 500;
+    }
+
+    .amount-text {
+        color: #2D5F4F;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* Documents Cell */
+    .documents-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .doc-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+        .doc-link:hover {
+            background: rgba(220, 53, 69, 0.2);
+            transform: translateX(3px);
+        }
+
+        .doc-link i {
+            font-size: 1rem;
+        }
+
+    .no-docs {
+        color: #9CA3AF;
+        font-style: italic;
+        font-size: 0.875rem;
+    }
+
+    /* Table Summary */
+    .table-summary {
+        padding: 1.5rem 2rem;
+        background: linear-gradient(135deg, #E8F5F0, #D1F0E4);
+        border-top: 1px solid #E5E7EB;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #2D5F4F;
+    }
+
+        .summary-item i {
+            font-size: 1.25rem;
+            color: #6DBAA3;
+        }
+
+    .summary-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .summary-value {
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .summary-divider {
+        width: 2px;
+        height: 40px;
+        background: rgba(109, 186, 163, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, #E8F5F0, #D1F0E4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .empty-icon i {
+            font-size: 3rem;
+            color: #6DBAA3;
+        }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        color: #2D3748;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: #9CA3AF;
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-create-first {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.75rem;
+        background: linear-gradient(135deg, #7FD858, #6DBAA3);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-create-first:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 216, 88, 0.4);
+        }
+
+    /* Quick Actions Card */
+    .quick-actions-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .actions-header {
+        padding: 1.25rem 1.75rem;
+        background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+        border-bottom: 1px solid #E5E7EB;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 1rem;
+    }
+
+        .actions-header i {
+            color: #7FD858;
+            font-size: 1.1rem;
+        }
+
+    .actions-grid {
+        padding: 1.75rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.5rem;
+        background: #F9FAFB;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid #E5E7EB;
+    }
+
+        .action-button:hover {
+            background: #FFFFFF;
+            border-color: #6DBAA3;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .submit-action .action-icon {
+        background: rgba(127, 216, 88, 0.15);
+        color: #7FD858;
+    }
+
+    .track-action .action-icon {
+        background: rgba(109, 186, 163, 0.15);
+        color: #6DBAA3;
+    }
+
+    .action-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .action-title {
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 0.95rem;
+    }
+
+    .action-desc {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 1024px) {
+        .stats-grid
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        width: 100%;
+    }
+
+    .btn-filter,
+    .btn-clear {
+        flex: 1;
+        justify-content: center;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .btn-header-action {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-actions {
+        width: 100%;
+    }
+
+    .btn-track {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .summary-divider {
+        width: 60px;
+        height: 2px;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .header-icon
+
+    {
+        width: 60px;
+        height: 60px;
+    }
+
+    .header-icon i {
+        font-size: 1.75rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+    }
+
+    .claims-table th,
+    .claims-table td {
+        padding: 0.875rem 0.75rem;
+    }
+
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+
+    }
+
+    /* Animations */
+    @@keyframes slideUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     }
 </style>
