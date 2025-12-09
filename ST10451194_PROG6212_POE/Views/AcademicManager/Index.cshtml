@@ -1,185 +1,465 @@
 ﻿@model IEnumerable<ST10451194_PROG6212_POE.Models.Claim>
 
 @{
-    ViewBag.Title = "Pending Claims for Academic Manager";
+    ViewData["Title"] = "Pending Claims";
 }
 
-<body>
-    <div class="container-claims">
-        <h2>Pending Claims for Academic Manager</h2>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Claim ID</th>
-                    <th>Submitted By</th>
-                    <th>Date Submitted</th>
-                    <th>Claim For</th> <!-- New column header -->
-                    <th>Hours Worked</th>
-                    <th>Hourly Rate</th>
-                    <th>Total Amount</th>
-                    <th>Supporting Documents</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var claim in Model)
-                {
-                    <tr>
-                        <td>@claim.ClaimId</td>
-                        <td>@claim.ApplicationUser?.Email</td>
-                        <td>@claim.DateSubmitted.ToString("yyyy-MM-dd")</td>
-                        <td>@claim.StartDate.ToString("MMM yyyy")</td> <!-- Displaying Claim For -->
-                        <td>@claim.HoursWorked</td>
-                        <td>R @claim.HourlyRate</td>
-                        <td>R @claim.TotalAmount</td>
-                        <td>
-                            @if (claim.Documents != null && claim.Documents.Any())
-                            {
-                                <ul style="list-style-type: none; padding: 0;">
-                                    @foreach (var doc in claim.Documents)
-                                    {
-                                        <li>
-                                            <i class="fa-solid fa-download"></i>
-                                            <a href="@Url.Content("~/uploads/" + doc.DocumentName)" target="_blank" style="text-decoration: none;" class="document-link">View Document</a>
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                            else
-                            {
-                                <span>No Documents</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <!-- Approve form -->
-                                <form asp-action="Approve" method="post">
-                                    <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                                    <input type="submit" value="Approve" class="btn btn-approve" />
-                                </form>
-
-                                <!-- Reject form -->
-                                <form asp-action="Reject" method="post" style="display:inline;">
-                                    <input type="hidden" name="claimId" value="@claim.ClaimId" />
-                                    <input type="submit" value="Reject" class="btn btn-reject" />
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        @if (!Model.Any())
-        {
-            <p>No pending claims to review at this time.</p>
-        }
+<div class="claims-container">
+    <!-- Header Section -->
+    <div class="claims-header">
+        <div class="header-content">
+            <h2>Pending Claims for Academic Manager</h2>
+            <p class="header-subtitle">Review and approve lecturer claims for final processing</p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-card">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <div>
+                    <span class="stat-number">@Model.Count()</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            /* background-color: #03041c; */
-            background: url('/images/temple4.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: #333;
-            margin: 0;
-            padding: 0;
+    <!-- Claims Table Card -->
+    <div class="table-card">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="claims-table">
+                    <thead>
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>Submitted By</th>
+                            <th>Date Submitted</th>
+                            <th>Claim Period</th>
+                            <th>Hours Worked</th>
+                            <th>Hourly Rate</th>
+                            <th>Total Amount</th>
+                            <th>Documents</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var claim in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="claim-id-badge">#@claim.ClaimId</span>
+                                </td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-small">
+                                            @claim.ApplicationUser?.Email?.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <span>@claim.ApplicationUser?.Email</span>
+                                    </div>
+                                </td>
+                                <td>@claim.DateSubmitted.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="period-badge">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        @claim.StartDate.ToString("MMM yyyy")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="hours-badge">@claim.HoursWorked hrs</span>
+                                </td>
+                                <td>R @claim.HourlyRate.ToString("N2")</td>
+                                <td>
+                                    <strong class="amount-text">R @claim.TotalAmount.ToString("N2")</strong>
+                                </td>
+                                <td>
+                                    @if (claim.Documents != null && claim.Documents.Any())
+                                    {
+                                        <div class="documents-cell">
+                                            @foreach (var doc in claim.Documents)
+                                            {
+                                                <a href="@Url.Content("~/uploads/" + doc.DocumentName)"
+                                                   target="_blank"
+                                                   class="document-link"
+                                                   title="View Document">
+                                                    <i class="fa-solid fa-file-pdf"></i>
+                                                    <span>View</span>
+                                                </a>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="no-docs">No documents</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <form asp-action="Approve" method="post" style="display: inline;">
+                                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                                            <button type="submit" class="btn-action btn-approve" title="Approve Claim">
+                                                <i class="fa-solid fa-check"></i>
+                                                Approve
+                                            </button>
+                                        </form>
+
+                                        <form asp-action="Reject" method="post" style="display: inline;">
+                                            <input type="hidden" name="claimId" value="@claim.ClaimId" />
+                                            <button type="submit" class="btn-action btn-reject" title="Reject Claim">
+                                                <i class="fa-solid fa-xmark"></i>
+                                                Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-clipboard-check"></i>
+                <h3>No Pending Claims</h3>
+                <p>There are no claims waiting for review at this time.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .claims-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .claims-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .header-content h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2D3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-subtitle {
+        color: #6B7280;
+        font-size: 0.95rem;
+    }
+
+    .header-stats {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #7FD858 0%, #6DBAA3 100%);
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.2);
+        color: white;
+    }
+
+        .stat-card i {
+            font-size: 2rem;
+            opacity: 0.9;
         }
 
-        .container-claims {
-            max-width: 1400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+    .stat-number {
+        display: block;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .stat-label {
+        display: block;
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin-top: 0.25rem;
+    }
+
+    /* Table Card */
+    .table-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .claims-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .claims-table thead {
+            background: linear-gradient(90deg, #2D5F4F 0%, #1a4035 100%);
         }
 
-        h2 {
-            text-align: center;
-            color: #03041c;
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: bold;
+        .claims-table th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-            .table th, .table td {
-                padding: 12px;
-                border: 1px solid #ddd;
-                text-align: left;
-                color: #333;
+            .claims-table th.text-center {
+                text-align: center;
             }
 
-            .table th {
-                background-color: #f2f2f2;
-                color: #03041c;
-                font-weight: bold;
-            }
-
-            .table td {
-                background-color: #ffffff;
-            }
-
-            .table a {
-                color: #03041c;
-                text-decoration: underline;
-            }
-
-                .table a:hover {
-                    color: #03041c;
-                }
-
-        .btn-approve, .btn-reject {
-            padding: 8px 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            color: #ffffff;
-            width: 100px;
-            margin-right: 5px;
+        .claims-table tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+            transition: background-color 0.2s;
         }
 
-        .btn-approve {
-            background-color: #28a745;
+            .claims-table tbody tr:hover {
+                background-color: #F9FAFB;
+            }
+
+            .claims-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+        .claims-table td {
+            padding: 1.25rem 1.25rem;
+            font-size: 0.9rem;
+            color: #4B5563;
+            vertical-align: middle;
         }
 
-        .btn-reject {
-            background-color: #dc3545;
+    /* Badge Styles */
+    .claim-id-badge {
+        display: inline-block;
+        background: #E8F5F0;
+        color: #2D5F4F;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .period-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #FEF3C7;
+        color: #92400E;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+        .period-badge i {
+            font-size: 0.75rem;
         }
+
+    .hours-badge {
+        display: inline-block;
+        background: #DBEAFE;
+        color: #1E40AF;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .amount-text {
+        color: #2D5F4F;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    /* User Cell */
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar-small {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6DBAA3, #7FD858);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    /* Documents Cell */
+    .documents-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .document-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #2D5F4F;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+        .document-link:hover {
+            background: #E8F5F0;
+            color: #1a4035;
+        }
+
+        .document-link i {
+            font-size: 1rem;
+            color: #dc3545;
+        }
+
+    .no-docs {
+        color: #9CA3AF;
+        font-style: italic;
+        font-size: 0.875rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-approve {
+        background: linear-gradient(135deg, #7FD858 0%, #6DBAA3 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(127, 216, 88, 0.3);
+    }
 
         .btn-approve:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(127, 216, 88, 0.4);
         }
+
+    .btn-reject {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+    }
 
         .btn-reject:hover {
-            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
         }
 
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+    .btn-action i {
+        font-size: 0.9rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #D1D5DB;
+            margin-bottom: 1rem;
         }
 
-        .document-link {
-            text-decoration: none;
-            color: #212529;
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #4B5563;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
-            .document-link:hover {
-                color: #03041c;
-            }
-    </style>
-</body>
+        .empty-state p {
+            color: #9CA3AF;
+            font-size: 1rem;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .claims-table
+
+    {
+        font-size: 0.85rem;
+    }
+
+    .claims-table th,
+    .claims-table td {
+        padding: 0.875rem 1rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .claims-header
+
+    {
+        flex-direction: column;
+    }
+
+    .header-stats {
+        width: 100%;
+    }
+
+    .stat-card {
+        flex: 1;
+    }
+
+    .table-card {
+        border-radius: 12px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+</style>

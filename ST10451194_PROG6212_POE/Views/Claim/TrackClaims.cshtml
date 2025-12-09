@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<ST10451194_PROG6212_POE.Models.Claim>
 @{
-    ViewBag.Title = "Track Claim Status";
+    ViewData["Title"] = "Track Claims";
 
     // Helper methods to determine CSS classes based on status
     string GetStatusClass(string status)
@@ -11,7 +11,7 @@
             "Rejected by Coordinator" => "rejected",
             "Rejected by Manager" => "rejected",
             "Pending" => "pending",
-            _ => "unknown" // Default class for any unexpected status
+            _ => "unknown"
         };
     }
 
@@ -23,63 +23,197 @@
             "Rejected by Coordinator" => "text-danger",
             "Rejected by Manager" => "text-danger",
             "Pending" => "text-warning",
-            _ => "text-muted" // Default text class
+            _ => "text-muted"
         };
     }
 }
 
-<div class="container-claims">
-    <h2 style="color: #03041c;">Track Your Claim Status</h2>
-    <!-- Status Summary Section -->
+<div class="track-claims-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+            <div class="header-text">
+                <h2>Track Your Claims</h2>
+                <p>Monitor the status and progress of all your submitted claims</p>
+            </div>
+        </div>
+        <a href="/Lecturer/Dashboard" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            Dashboard
+        </a>
+    </div>
+
+    <!-- Status Summary Cards -->
     <div class="status-summary">
-        <div class="status-item approved">
-            Approved Claims: <span id="approved-count">@Model.Count(c => c.Status == "Approved by Manager")</span>
+        <div class="status-card approved-card">
+            <div class="status-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="status-info">
+                <span class="status-count" id="approved-count">@Model.Count(c => c.Status == "Approved by Manager")</span>
+                <span class="status-label">Approved</span>
+            </div>
         </div>
-        <div class="status-item rejected">
-            Rejected Claims: <span id="rejected-count">@Model.Count(c => c.Status == "Rejected by Coordinator" || c.Status == "Rejected by Manager")</span>
+
+        <div class="status-card pending-card">
+            <div class="status-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="status-info">
+                <span class="status-count" id="pending-count">@Model.Count(c => c.Status == "Pending")</span>
+                <span class="status-label">Pending</span>
+            </div>
         </div>
-        <div class="status-item pending">
-            Pending Claims: <span id="pending-count">@Model.Count(c => c.Status == "Pending")</span>
+
+        <div class="status-card rejected-card">
+            <div class="status-icon">
+                <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+            <div class="status-info">
+                <span class="status-count" id="rejected-count">@Model.Count(c => c.Status == "Rejected by Coordinator" || c.Status == "Rejected by Manager")</span>
+                <span class="status-label">Rejected</span>
+            </div>
+        </div>
+
+        <div class="status-card total-card">
+            <div class="status-icon">
+                <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="status-info">
+                <span class="status-count">@Model.Count()</span>
+                <span class="status-label">Total Claims</span>
+            </div>
         </div>
     </div>
 
     <!-- Filter Section -->
-    <div class="filter-section">
-        <label for="status-filter">Filter by Status:</label>
-        <select id="status-filter" class="status-filter" onchange="filterClaims()">
-            <option value="All">All</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Pending">Pending</option>
-        </select>
+    <div class="filter-card">
+        <div class="filter-content">
+            <div class="filter-label">
+                <i class="fa-solid fa-filter"></i>
+                Filter Claims
+            </div>
+            <select id="status-filter" class="status-filter" onchange="filterClaims()">
+                <option value="All">All Claims</option>
+                <option value="Approved">Approved Only</option>
+                <option value="Rejected">Rejected Only</option>
+                <option value="Pending">Pending Only</option>
+            </select>
+        </div>
+        <div class="results-count">
+            Showing <span id="visible-count">@Model.Count()</span> of @Model.Count() claims
+        </div>
     </div>
 
-    <!-- Claims Table -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Claim ID</th>
-                <th>Submission Date</th>
-                <th>Claim For</th> <!-- New column header -->
-                <th>Status</th>
-                <th>Remarks</th>
-            </tr>
-        </thead>
-        <tbody id="claims-table-body">
-            @foreach (var claim in Model)
-            {
-                <tr class="@GetStatusClass(claim.Status)" data-status="@claim.Status">
-                    <td>@claim.ClaimId</td>
-                    <td>@claim.DateSubmitted.ToString("yyyy/MM/dd")</td>
-                    <td>@claim.StartDate.ToString("MMM yyyy")</td> <!-- Displaying Claim For -->
-                    <td class="@GetRowClass(claim.Status)">@claim.Status</td>
-                    <td>@claim.Notes</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <a href="/Lecturer/Dashboard" class="btn-submit" style="text-decoration:none;"><i class="fa-solid fa-house"></i> Back to Dashboard</a>
+    <!-- Claims Table Card -->
+    <div class="table-card">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="claims-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="fa-solid fa-hashtag"></i>
+                                Claim ID
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-calendar"></i>
+                                Submitted
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-calendar-days"></i>
+                                Claim Period
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-info-circle"></i>
+                                Status
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-message"></i>
+                                Remarks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="claims-table-body">
+                        @foreach (var claim in Model)
+                        {
+                            <tr class="claim-row @GetStatusClass(claim.Status)" data-status="@claim.Status">
+                                <td>
+                                    <span class="claim-id-badge">#@claim.ClaimId</span>
+                                </td>
+                                <td>
+                                    <span class="date-text">@claim.DateSubmitted.ToString("dd MMM yyyy")</span>
+                                </td>
+                                <td>
+                                    <span class="period-badge">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        @claim.StartDate.ToString("MMM yyyy")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (claim.Status == "Approved by Manager")
+                                    {
+                                        <span class="status-badge status-approved">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            Approved
+                                        </span>
+                                    }
+                                    else if (claim.Status.Contains("Rejected"))
+                                    {
+                                        <span class="status-badge status-rejected">
+                                            <i class="fa-solid fa-circle-xmark"></i>
+                                            Rejected
+                                        </span>
+                                    }
+                                    else if (claim.Status == "Pending")
+                                    {
+                                        <span class="status-badge status-pending">
+                                            <i class="fa-solid fa-clock"></i>
+                                            Pending
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-unknown">
+                                            @claim.Status
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="remarks-text">
+                                        @if (!string.IsNullOrWhiteSpace(claim.Notes))
+                                        {
+                                            @claim.Notes
+                                        }
+                                        else
+                                        {
+                                            <span class="no-remarks">No remarks</span>
+                                        }
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-inbox"></i>
+                <h3>No Claims Found</h3>
+                <p>You haven't submitted any claims yet. Start by creating your first claim!</p>
+                <a href="/Claim/Create" class="btn-create-claim">
+                    <i class="fa-solid fa-plus"></i>
+                    Create New Claim
+                </a>
+            </div>
+        }
+    </div>
 </div>
 
 <script>
@@ -87,171 +221,572 @@
         const filterValue = document.getElementById("status-filter").value.toLowerCase();
         const claimsTable = document.getElementById("claims-table-body");
         const rows = claimsTable.getElementsByTagName("tr");
-
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const status = row.getAttribute("data-status").toLowerCase();
-
-            if (filterValue === "all" || status === filterValue) {
-                row.style.display = ""; // Show the row
-            } else {
-                row.style.display = "none"; // Hide the row
-            }
-        }
-    }
-</script>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        /* background-color: #03041c; */
-        background: url('/images/temple3.jpg') no-repeat center center fixed;
-        background-size: cover;
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
-
-    .container-claims {
-        max-width: 1200px;
-        margin: 100px auto;
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-
-    h2 {
-        text-align: center;
-        color: #03041c;
-        margin-bottom: 30px;
-        font-size: 24px;
-        font-weight: bold;
-    }
-
-    .status-summary {
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 20px;
-    }
-
-    .status-item {
-        font-size: 18px;
-        padding: 10px;
-        border-radius: 4px;
-        text-align: center;
-        width: 30%;
-    }
-
-    .approved {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .rejected {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .pending {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .filter-section {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .status-filter {
-        padding: 8px;
-        font-size: 16px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-    }
-
-    .table {
-        width: 100%;
-        margin-bottom: 20px;
-        border-collapse: collapse;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-        .table th, .table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-            color: #333;
-        }
-
-        .table th {
-            background-color: #f2f2f2;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .table td {
-            background-color: #ffffff;
-        }
-
-        .table .approved {
-            color: green; /* Text for Approved status */
-        }
-
-        .table .rejected {
-            color: red; /* Text for Rejected status */
-        }
-
-        .table .pending {
-            color: orangered; /* Text for Pending status */
-        }
-
-    .btn-submit {
-        display: block;
-        width: 200px;
-        margin: 20px auto;
-        padding: 10px;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        background-color: #03041c;
-        color: #ffffff;
-        text-align: center;
-        transition: background-color 0.3s ease-in-out;
-    }
-
-        .btn-submit:hover {
-            background-color: #fff;
-            color: #03041c;
-            border: 1px solid #03041c;
-        }
-</style>
-
-<script>
-    function filterClaims() {
-        const filterValue = document.getElementById("status-filter").value.toLowerCase();
-        const claimsTable = document.getElementById("claims-table-body");
-        const rows = claimsTable.getElementsByTagName("tr");
+        let visibleCount = 0;
 
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const status = row.getAttribute("data-status").toLowerCase();
 
             if (filterValue === "all" || status.includes(filterValue)) {
-                row.style.display = ""; // Show the row
+                row.style.display = "";
+                visibleCount++;
             } else {
-                row.style.display = "none"; // Hide the row
+                row.style.display = "none";
             }
         }
+
+        // Update visible count
+        document.getElementById("visible-count").textContent = visibleCount;
+
+        // Add animation to filtered rows
+        const visibleRows = Array.from(rows).filter(row => row.style.display !== "none");
+        visibleRows.forEach((row, index) => {
+            row.style.animation = 'none';
+            setTimeout(() => {
+                row.style.animation = `fadeIn 0.3s ease-in ${index * 0.05}s both`;
+            }, 10);
+        });
     }
 
-    // Optional: Add a method to determine the class based on the status
-    function GetStatusClass(status) {
-        if (status.includes("Approved by Manager")) return "approved";
-        if (status.includes("Rejected")) return "rejected";
-        if (status.includes("Pending")) return "pending";
-        return "";
-    }
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    });
 </script>
+
+<style>
+    .track-claims-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #7FD858, #6DBAA3);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.25);
+    }
+
+        .header-icon i {
+            font-size: 1.75rem;
+            color: white;
+        }
+
+    .header-text h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2D3748;
+    }
+
+    .header-text p {
+        margin: 0;
+        color: #6B7280;
+        font-size: 0.95rem;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #FFFFFF;
+        color: #2D5F4F;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 2px solid #E5E7EB;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+        .btn-back:hover {
+            background: #2D5F4F;
+            color: white;
+            border-color: #2D5F4F;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(45, 95, 79, 0.2);
+        }
+
+    /* Status Summary Cards */
+    .status-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+    }
+
+        .status-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+    .approved-card {
+        border-color: #7FD858;
+    }
+
+    .pending-card {
+        border-color: #FFA726;
+    }
+
+    .rejected-card {
+        border-color: #EF4444;
+    }
+
+    .total-card {
+        border-color: #6DBAA3;
+    }
+
+    .status-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+    }
+
+    .approved-card .status-icon {
+        background: rgba(127, 216, 88, 0.15);
+        color: #7FD858;
+    }
+
+    .pending-card .status-icon {
+        background: rgba(255, 167, 38, 0.15);
+        color: #FFA726;
+    }
+
+    .rejected-card .status-icon {
+        background: rgba(239, 68, 68, 0.15);
+        color: #EF4444;
+    }
+
+    .total-card .status-icon {
+        background: rgba(109, 186, 163, 0.15);
+        color: #6DBAA3;
+    }
+
+    .status-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .status-count {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2D3748;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .status-label {
+        font-size: 0.9rem;
+        color: #6B7280;
+        font-weight: 500;
+    }
+
+    /* Filter Card */
+    .filter-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .filter-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .filter-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 0.95rem;
+    }
+
+        .filter-label i {
+            color: #6DBAA3;
+        }
+
+    .status-filter {
+        padding: 0.75rem 1rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: #2D3748;
+        background: #F9FAFB;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        min-width: 200px;
+    }
+
+        .status-filter:focus {
+            outline: none;
+            border-color: #6DBAA3;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(109, 186, 163, 0.1);
+        }
+
+    .results-count {
+        color: #6B7280;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+        .results-count span {
+            color: #2D5F4F;
+            font-weight: 700;
+        }
+
+    /* Table Card */
+    .table-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .claims-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .claims-table thead {
+            background: linear-gradient(90deg, #2D5F4F 0%, #1a4035 100%);
+        }
+
+        .claims-table th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+            .claims-table th i {
+                margin-right: 0.5rem;
+                opacity: 0.8;
+            }
+
+        .claims-table tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+            transition: all 0.2s ease;
+        }
+
+            .claims-table tbody tr:hover {
+                background-color: #F9FAFB;
+            }
+
+            .claims-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+        .claims-table td {
+            padding: 1.25rem 1.25rem;
+            font-size: 0.9rem;
+            color: #4B5563;
+            vertical-align: middle;
+        }
+
+    /* Claim ID Badge */
+    .claim-id-badge {
+        display: inline-block;
+        background: #E8F5F0;
+        color: #2D5F4F;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    /* Date Text */
+    .date-text {
+        color: #4B5563;
+        font-weight: 500;
+    }
+
+    /* Period Badge */
+    .period-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #FEF3C7;
+        color: #92400E;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+        .period-badge i {
+            font-size: 0.75rem;
+        }
+
+    /* Status Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .status-approved {
+        background: rgba(127, 216, 88, 0.15);
+        color: #2D8C3E;
+    }
+
+    .status-pending {
+        background: rgba(255, 167, 38, 0.15);
+        color: #C77700;
+    }
+
+    .status-rejected {
+        background: rgba(239, 68, 68, 0.15);
+        color: #C41E3A;
+    }
+
+    .status-unknown {
+        background: rgba(107, 114, 128, 0.15);
+        color: #4B5563;
+    }
+
+    .status-badge i {
+        font-size: 0.9rem;
+    }
+
+    /* Remarks Text */
+    .remarks-text {
+        color: #4B5563;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .no-remarks {
+        color: #9CA3AF;
+        font-style: italic;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #D1D5DB;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #4B5563;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: #9CA3AF;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+    .btn-create-claim {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.75rem;
+        background: linear-gradient(135deg, #7FD858 0%, #6DBAA3 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-create-claim:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 216, 88, 0.4);
+        }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .claim-row {
+        animation: fadeIn 0.3s ease-in both;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 1024px) {
+        .status-summary
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-content {
+        width: 100%;
+    }
+
+    .btn-back {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .status-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .status-filter {
+        width: 100%;
+    }
+
+    .results-count {
+        text-align: center;
+    }
+
+    .claims-table th,
+    .claims-table td {
+        padding: 0.875rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .header-icon
+
+    {
+        width: 50px;
+        height: 50px;
+    }
+
+    .header-icon i {
+        font-size: 1.5rem;
+    }
+
+    .header-text h2 {
+        font-size: 1.5rem;
+    }
+
+    .status-card {
+        padding: 1.25rem;
+    }
+
+    .status-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+
+    .status-count {
+        font-size: 1.75rem;
+    }
+
+    .table-card {
+        border-radius: 12px;
+    }
+
+    }
+</style>

@@ -4,48 +4,148 @@
     ViewData["Title"] = "Submit Claim";
 }
 
-<div class="container-claims">
-    <h2>Submit Your Claim</h2>
-
-    <form asp-action="Create" enctype="multipart/form-data" method="post" id="claimForm">
-        <div class="form-group">
-            <label asp-for="HoursWorked"></label>
-            <input asp-for="HoursWorked" class="form-control" required />
-            <span asp-validation-for="HoursWorked" class="text-danger"></span>
+<div class="claim-submission-container">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="header-icon">
+            <i class="fa-solid fa-file-invoice"></i>
         </div>
-
-        <div class="form-group">
-            <label asp-for="HourlyRate"></label>
-            <input asp-for="HourlyRate" class="form-control" required />
-            <span asp-validation-for="HourlyRate" class="text-danger"></span>
+        <div class="header-text">
+            <h2>Submit Your Claim</h2>
+            <p>Complete the form below to submit your monthly claim for processing</p>
         </div>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="StartDate"></label>
-            <input asp-for="StartDate" type="date" class="form-control" required />
-            <span asp-validation-for="StartDate" class="text-danger"></span>
+    <!-- Form Card -->
+    <div class="form-card">
+        <form asp-action="Create" enctype="multipart/form-data" method="post" id="claimForm">
+
+            <!-- Hours and Rate Row -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="HoursWorked">
+                        <i class="fa-solid fa-clock"></i>
+                        Hours Worked
+                    </label>
+                    <input asp-for="HoursWorked"
+                           class="form-control"
+                           type="number"
+                           step="0.01"
+                           placeholder="Enter hours worked"
+                           required />
+                    <span asp-validation-for="HoursWorked" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="HourlyRate">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                        Hourly Rate (R)
+                    </label>
+                    <input asp-for="HourlyRate"
+                           class="form-control"
+                           type="number"
+                           step="0.01"
+                           placeholder="Enter hourly rate"
+                           required />
+                    <span asp-validation-for="HourlyRate" class="error-message"></span>
+                </div>
+            </div>
+
+            <!-- Date Range Row -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="StartDate">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        Start Date
+                    </label>
+                    <input asp-for="StartDate"
+                           type="date"
+                           class="form-control"
+                           required />
+                    <span asp-validation-for="StartDate" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="EndDate">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        End Date
+                    </label>
+                    <input asp-for="EndDate"
+                           type="date"
+                           class="form-control"
+                           required />
+                    <span asp-validation-for="EndDate" class="error-message"></span>
+                </div>
+            </div>
+
+            <!-- Calculated Total (Preview) -->
+            <div class="total-preview">
+                <div class="preview-label">Estimated Total</div>
+                <div class="preview-amount" id="totalAmount">R 0.00</div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="form-group">
+                <label asp-for="Notes">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Additional Notes
+                </label>
+                <textarea asp-for="Notes"
+                          class="form-control textarea-control"
+                          rows="4"
+                          placeholder="Add any additional notes or comments about your claim..."></textarea>
+                <span asp-validation-for="Notes" class="error-message"></span>
+            </div>
+
+            <!-- File Upload Section -->
+            <div class="form-group">
+                <label for="SupportingDocuments" style="@(ViewBag.InvalidFile != null && (bool)ViewBag.InvalidFile ? "color: #dc3545;" : "")">
+                    <i class="fa-solid fa-paperclip"></i>
+                    Supporting Documents
+                </label>
+                <div class="file-upload-wrapper">
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p class="upload-text">Click to upload or drag and drop</p>
+                        <p class="upload-hint">PDF files only, max 15MB each</p>
+                        <input type="file"
+                               name="SupportingDocuments"
+                               id="SupportingDocuments"
+                               class="file-input"
+                               accept=".pdf"
+                               multiple
+                               required />
+                    </div>
+                    <div id="fileList" class="file-list"></div>
+                </div>
+                <span asp-validation-for="SupportingDocuments" class="error-message"></span>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Submit Claim
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Info Card -->
+    <div class="info-card">
+        <div class="info-header">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Important Information</span>
         </div>
-
-        <div class="form-group">
-            <label asp-for="EndDate"></label>
-            <input asp-for="EndDate" type="date" class="form-control" required />
-            <span asp-validation-for="EndDate" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Notes"></label>
-            <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Add any additional notes..."></textarea>
-            <span asp-validation-for="Notes" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="SupportingDocuments" style="@(ViewBag.InvalidFile != null && (bool)ViewBag.InvalidFile ? "color: red;" : "color: black;")">Supporting Documents (PDF only, max 15MB)</label>
-            <input type="file" name="SupportingDocuments" id="SupportingDocuments" class="form-control" multiple required />
-            <span asp-validation-for="SupportingDocuments" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn-claims btn-primary"><i class="fa-solid fa-upload"></i> Submit Claim</button>
-    </form>
+        <ul class="info-list">
+            <li><i class="fa-solid fa-check"></i> Claims must be submitted within the current or previous month</li>
+            <li><i class="fa-solid fa-check"></i> Date range cannot exceed 30 days</li>
+            <li><i class="fa-solid fa-check"></i> Only PDF documents are accepted</li>
+            <li><i class="fa-solid fa-check"></i> Maximum file size is 15MB per document</li>
+            <li><i class="fa-solid fa-check"></i> You can only submit one claim per month</li>
+        </ul>
+    </div>
 </div>
 
 @section Scripts {
@@ -53,26 +153,94 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // File validation
-            $('#SupportingDocuments').on('change', function () {
+            // Calculate total amount in real-time
+            function calculateTotal() {
+                const hours = parseFloat($('#HoursWorked').val()) || 0;
+                const rate = parseFloat($('#HourlyRate').val()) || 0;
+                const total = hours * rate;
+                $('#totalAmount').text('R ' + total.toFixed(2));
+
+                if (total > 0) {
+                    $('#totalAmount').addClass('active');
+                } else {
+                    $('#totalAmount').removeClass('active');
+                }
+            }
+
+            $('#HoursWorked, #HourlyRate').on('input', calculateTotal);
+
+            // File upload handling
+            const fileInput = $('#SupportingDocuments');
+            const fileUploadArea = $('#fileUploadArea');
+            const fileList = $('#fileList');
+
+            // Click to upload
+            fileUploadArea.on('click', function() {
+                fileInput.click();
+            });
+
+            // Drag and drop
+            fileUploadArea.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('drag-over');
+            });
+
+            fileUploadArea.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('drag-over');
+            });
+
+            fileUploadArea.on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('drag-over');
+                const files = e.originalEvent.dataTransfer.files;
+                fileInput[0].files = files;
+                fileInput.trigger('change');
+            });
+
+            // File validation and display
+            fileInput.on('change', function () {
                 let maxFileSize = 15 * 1024 * 1024; // 15MB
                 let valid = true;
+                fileList.empty();
 
-                $.each(this.files, function (i, file) {
-                    if (file.type !== 'application/pdf') {
-                        alert('Only PDF files are allowed.');
-                        valid = false;
-                        return false; // Exit loop
-                    }
-                    if (file.size > maxFileSize) {
-                        alert('File size cannot exceed 15MB.');
-                        valid = false;
-                        return false;
-                    }
-                });
+                if (this.files.length > 0) {
+                    fileUploadArea.addClass('has-files');
+
+                    $.each(this.files, function (i, file) {
+                        if (file.type !== 'application/pdf') {
+                            alert('Only PDF files are allowed.');
+                            valid = false;
+                            return false;
+                        }
+                        if (file.size > maxFileSize) {
+                            alert('File size cannot exceed 15MB.');
+                            valid = false;
+                            return false;
+                        }
+
+                        // Display file
+                        const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                        const fileItem = `
+                            <div class="file-item">
+                                <i class="fa-solid fa-file-pdf"></i>
+                                <div class="file-details">
+                                    <span class="file-name">${file.name}</span>
+                                    <span class="file-size">${fileSize} MB</span>
+                                </div>
+                                <i class="fa-solid fa-check-circle file-check"></i>
+                            </div>
+                        `;
+                        fileList.append(fileItem);
+                    });
+                } else {
+                    fileUploadArea.removeClass('has-files');
+                }
 
                 if (!valid) {
                     $(this).val('');
+                    fileList.empty();
+                    fileUploadArea.removeClass('has-files');
                 }
             });
 
@@ -82,16 +250,13 @@
                 const endDate = new Date($('#EndDate').val());
                 const today = new Date();
 
-                // Set the first and last day of the current and previous months
                 const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-                const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Last day of current month
+                const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                 const firstDayPreviousMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                const lastDayPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of previous month
+                const lastDayPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
-                // Calculate the difference in days between start and end date
                 const daysDifference = (endDate - startDate) / (1000 * 60 * 60 * 24);
 
-                // Check if start and end dates are within allowed range (current or previous month) and within 31 days
                 if (
                     !(
                         (startDate >= firstDayCurrentMonth && endDate <= lastDayCurrentMonth) ||
@@ -103,92 +268,407 @@
                 }
             });
 
-            // Check for existing claim for the month
+            // Check for existing claim alert
         @if (ViewData["ClaimExists"] != null && (bool)ViewData["ClaimExists"])
         {
             <text>
                     alert("You have already submitted a claim for this month.");
             </text>
         }
-                });
+        });
     </script>
 }
 
-
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: url('/images/temple3.jpg') no-repeat center center fixed;
-        background-size: cover;
-        color: #03041c;
+    .claim-submission-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #2D5F4F 0%, #1a4035 100%);
+        border-radius: 16px;
+        color: white;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+    }
+
+    .header-text h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .header-text p {
         margin: 0;
-        padding: 0;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.85);
     }
 
-    .container-claims {
-        max-width: 600px;
-        margin: 100px auto;
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
+    /* Form Card */
+    .form-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
     }
 
-    h2 {
-        text-align: center;
-        color: #03041c;
-        margin-bottom: 30px;
-        font-size: 24px;
-        font-weight: bold;
+    /* Form Rows */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 
+    /* Form Groups */
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
     }
 
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: #03041c;
-    }
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
 
+            .form-group label i {
+                color: #6DBAA3;
+                font-size: 1rem;
+            }
+
+    /* Form Controls */
     .form-control {
         width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        transition: border-color 0.3s ease-in-out;
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        background-color: #F9FAFB;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        color: #2D3748;
     }
 
         .form-control:focus {
-            border-color: #03041c;
+            border-color: #6DBAA3;
+            background-color: #FFFFFF;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(109, 186, 163, 0.1);
         }
 
-    .btn-claims {
-        width: 100%;
-        padding: 12px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #ffffff;
-        background-color: #03041c;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease-in-out;
+        .form-control::placeholder {
+            color: #9CA3AF;
+        }
+
+    .textarea-control {
+        resize: vertical;
+        min-height: 100px;
+        font-family: 'Inter', sans-serif;
     }
 
-        .btn-claims:hover {
-            background-color: #fff;
-            color: #03041c;
-            border: 1px solid #03041c;
+    /* Total Preview */
+    .total-preview {
+        background: linear-gradient(135deg, #E8F5F0 0%, #D1F0E4 100%);
+        border: 2px solid #6DBAA3;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .preview-label {
+        font-size: 0.9rem;
+        color: #2D5F4F;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .preview-amount {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2D5F4F;
+        transition: all 0.3s ease;
+    }
+
+        .preview-amount.active {
+            color: #2D5F4F;
+            transform: scale(1.05);
         }
 
-    .text-danger {
-        font-size: 14px;
-        color: #d9534f;
+    /* File Upload */
+    .file-upload-wrapper {
+        margin-top: 0.5rem;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #D1D5DB;
+        border-radius: 12px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        background: #F9FAFB;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .file-upload-area:hover {
+            border-color: #6DBAA3;
+            background: #E8F5F0;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #7FD858;
+            background: #E8F5F0;
+            transform: scale(1.02);
+        }
+
+        .file-upload-area.has-files {
+            border-color: #7FD858;
+            background: #E8F5F0;
+        }
+
+        .file-upload-area i {
+            font-size: 3rem;
+            color: #6DBAA3;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+    .upload-text {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2D3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+        font-size: 0.875rem;
+        color: #6B7280;
+        margin: 0;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    /* File List */
+    .file-list {
+        margin-top: 1rem;
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #F9FAFB;
+        border: 1px solid #E5E7EB;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }
+
+        .file-item i.fa-file-pdf {
+            font-size: 1.5rem;
+            color: #dc3545;
+        }
+
+    .file-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #2D3748;
+        font-size: 0.9rem;
+    }
+
+    .file-size {
+        font-size: 0.8rem;
+        color: #6B7280;
+    }
+
+    .file-check {
+        color: #7FD858;
+        font-size: 1.25rem;
+    }
+
+    /* Submit Button */
+    .form-actions {
+        margin-top: 2rem;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: linear-gradient(135deg, #7FD858 0%, #6DBAA3 100%);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 4px 12px rgba(127, 216, 88, 0.3);
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 216, 88, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit i {
+            font-size: 1.1rem;
+        }
+
+    /* Error Messages */
+    .error-message {
+        display: block;
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Info Card */
+    .info-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid #6DBAA3;
+    }
+
+    .info-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: #2D5F4F;
+        margin-bottom: 1rem;
+        font-size: 1.05rem;
+    }
+
+        .info-header i {
+            font-size: 1.25rem;
+            color: #6DBAA3;
+        }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: #4B5563;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+            .info-list li i {
+                color: #7FD858;
+                margin-top: 0.25rem;
+                font-size: 0.85rem;
+            }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .claim-submission-container
+
+    {
+        padding: 0;
+    }
+
+    .page-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .header-text h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .preview-amount {
+        font-size: 1.75rem;
+    }
+
+    .file-upload-area {
+        padding: 2rem 1.5rem;
+    }
+
+    .info-card {
+        padding: 1.25rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .header-text h2
+
+    {
+        font-size: 1.25rem;
+    }
+
+    .header-text p {
+        font-size: 0.85rem;
+    }
+
+    .form-card {
+        padding: 1.25rem;
+    }
+
+    .preview-amount {
+        font-size: 1.5rem;
+    }
+
     }
 </style>
