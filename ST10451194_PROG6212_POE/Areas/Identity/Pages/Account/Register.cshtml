@@ -1,0 +1,172 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="register-container">
+    <div class="register-box">
+        <section class="register-section">
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <h1>Register</h1>
+                <h2>Enter your details to create a New Account</h2>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Firstname" class="form-control" autocomplete="Firstname" aria-required="true" placeholder="First Name" />
+                    <label asp-for="Input.Firstname">First Name</label>
+                    <span asp-validation-for="Input.Firstname" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Lastname" class="form-control" autocomplete="Lastname" aria-required="true" placeholder="Last Name" />
+                    <label asp-for="Input.Lastname">Last Name</label>
+                    <span asp-validation-for="Input.Lastname" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+                    <label asp-for="Input.PhoneNumber">Phone Number</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <!-- New Field for ID Number -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.IDNumber" class="form-control" placeholder="ID Number" />
+                    <label asp-for="Input.IDNumber">ID Number</label>
+                    <span asp-validation-for="Input.IDNumber" class="text-danger"></span>
+                </div>
+
+                <!-- New Field for Home Address -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.HomeAddress" class="form-control" placeholder="Home Address" />
+                    <label asp-for="Input.HomeAddress">Home Address</label>
+                    <span asp-validation-for="Input.HomeAddress" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Faculty" class="form-control" placeholder="Faculty" />
+                    <label asp-for="Input.Faculty">Faculty</label>
+                    <span asp-validation-for="Input.Faculty" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm password" />
+                    <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="btn btn-register">Register</button>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+<style>
+    /* Body Styling */
+    body {
+        font-family: Arial, sans-serif;
+        /* background-color: #03041c; */
+        background: url('/images/temple7.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        color: #fff;
+    }
+
+    /* Centering the register form */
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Styling the register box */
+    .register-box {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 900px;
+        color: #000;
+    }
+
+    h1, h2 {
+        text-align: center;
+        color: #03041c;
+    }
+
+    .register-section {
+        margin-bottom: 2rem;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #dee2e6;
+        margin: 1rem 0;
+    }
+
+    /* Styling the form inputs */
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        padding: 1rem;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .form-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .text-danger {
+        font-size: 0.9rem;
+    }
+
+    /* Register button styling */
+    .btn-register {
+        background-color: #03041c;
+        border: none;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        width: 100%;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-register:hover {
+            background-color: #ffffff;
+            border: 1px solid #03041c;
+            color: #03041c;
+        }
+
+    .navbar-light .navbar-nav .nav-link {
+        display: none;
+    }
+
+</style>

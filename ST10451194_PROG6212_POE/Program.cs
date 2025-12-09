@@ -1,36 +1,53 @@
-namespace ST10451194_PROG6212_POE
-{
-    public class Program
+using Microsoft.EntityFrameworkCore;
+using ST10451194_PROG6212_POE.Data;
+using Microsoft.AspNetCore.Identity;
+using FluentValidation.AspNetCore;
+using ST10451194_PROG6212_POE.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+//Adding DB Context builder services with options with roles
+builder.Services.AddDbContext<Prog6212DbContext>(options =>
+           options.UseSqlServer(builder.Configuration.GetConnectionString("Prog6212DEV")));
+
+//Added service for Authorization for Role based Access
+builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders()
+               .AddRoles<IdentityRole>()
+               .AddEntityFrameworkStores<Prog6212DbContext>();
+
+// Add FluentValidation
+builder.Services.AddControllersWithViews()
+    .AddFluentValidation(config =>
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        config.RegisterValidatorsFromAssemblyContaining<Program>(); // Automatically register all validators in the project
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+    });
 
-            var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+var app = builder.Build();
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-
-            app.Run();
-        }
-    }
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapRazorPages();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

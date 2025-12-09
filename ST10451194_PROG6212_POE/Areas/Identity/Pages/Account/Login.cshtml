@@ -1,0 +1,162 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="login-container">
+    <div class="login-box">
+        <section class="login-section">
+            <form id="account" method="post">
+                <h1>Log in</h1>
+                <h2>Enter your Account Details to Login:</h2>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                
+                <div class="checkbox mb-3">
+                    <label asp-for="Input.RememberMe" class="form-label">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        Remember me
+                    </label>
+                </div>
+                
+                <div>
+                    <button id="login-submit" type="submit" class="btn btn-login">Log in</button>
+                </div>
+                
+                <div class="login-links">
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                    </p>
+                    <p>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    /* Body Styling */
+    body {
+        font-family: Arial, sans-serif;
+        /* background-color: #03041c; */
+        background: url('/images/temple2.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        color: #fff;
+    }
+
+    /* Centering the login form */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Styling the login box */
+    .login-box {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 900px;
+        color: #000;
+    }
+
+    h1, h2 {
+        text-align: center;
+        color: #03041c;
+    }
+
+    .login-section {
+        margin-bottom: 2rem;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #dee2e6;
+        margin: 1rem 0;
+    }
+
+    /* Styling the form inputs */
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        padding: 1rem;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .form-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .text-danger {
+        font-size: 0.9rem;
+    }
+
+    /* Login button styling */
+    .btn-login {
+        background-color: #03041c;
+        border: none;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        width: 100%;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .btn-login:hover {
+        background-color: #ffffff;
+        border: 1px solid #03041c;
+        color: #03041c;
+    }
+
+    /* Links styling */
+    .login-links a {
+        color: #03041c;
+        text-decoration: none;
+    }
+
+    .login-links a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+
+    .checkbox label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .navbar-light .navbar-nav .nav-link {
+        display: none;
+    }
+
+</style>
