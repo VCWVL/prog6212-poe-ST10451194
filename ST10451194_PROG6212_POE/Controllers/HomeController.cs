@@ -1,7 +1,10 @@
-using System.Diagnostics;
+
+//Import List
 using Microsoft.AspNetCore.Mvc;
 using ST10451194_PROG6212_POE.Models;
+using System.Diagnostics;
 
+//Home controller - Default screen when app starts
 namespace ST10451194_PROG6212_POE.Controllers
 {
     public class HomeController : Controller
@@ -14,11 +17,6 @@ namespace ST10451194_PROG6212_POE.Controllers
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }
