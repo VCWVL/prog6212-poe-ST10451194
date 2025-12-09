@@ -4,47 +4,145 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ST10451194_PROG6212_POE</title>
-    <script type="importmap"></script>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ST10451194_PROG6212_POE.styles.css" asp-append-version="true" />
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 </head>
-<body>
+
+<body class="d-flex flex-column min-vh-100">
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ST10451194_PROG6212_POE</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MonthlyClaimSystem &copy;</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="fa fa-home"></i> Home
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        <!-- Role-based links -->
+                        @if (User.IsInRole("Lecturer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Lecturer" asp-action="Dashboard">
+                                    <i class="fa-solid fa-chart-simple"></i> Lecturer Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Claim" asp-action="Create">
+                                    <i class="fa fa-upload"></i> Submit a Claim
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Claim" asp-action="TrackClaims">
+                                    <i class="fa fa-eye"></i> Track Claims
+                                </a>
+                            </li>
+                        }
+                        else if (User.IsInRole("Programme Coordinator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="ProgrammeCoordinator" asp-action="Index">
+                                    <i class="fa fa-bar-chart"></i> Process Claims
+                                </a>
+                            </li>
+                        }
+                        else if (User.IsInRole("Academic Manager"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="AcademicManager" asp-action="Index">
+                                    <i class="fa fa-bar-chart"></i> Process Claims
+                                </a>
+                            </li>
+                        }
+                        else if (User.IsInRole("HR Manager"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="HR" asp-action="Dashboard">
+                                    <i class="fa-solid fa-chart-simple"></i> HR Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="HR" asp-action="ProcessPayments">
+                                    <i class="fa fa-credit-card"></i> Process Payments
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="HR" asp-action="GenerateReport">
+                                    <i class="fa fa-area-chart"></i> Generate Reports
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="ManageUsers" asp-action="Index">
+                                    <i class="fa fa-users"></i> Manage Users
+                                </a>
+                            </li>
+                        }
                     </ul>
+                </div>
+
+                <div class="navbar-nav ms-auto">
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - ST10451194_PROG6212_POE - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main class="flex-grow-1">
+        <div class="container pb-3">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="border-top text-muted py-3" style="background-color: #fff;">
+        <div class="container text-center">
+            &copy; 2025 - ST10451194_PROG6212_POE - Kyle Pillay - PROG6212 - POE - PART 3 - MONTHLY CLAIM SYSTEM
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style>
+
+    html, body {
+    height: 100%;
+    }
+
+    body {
+    display: flex;
+    flex-direction: column;
+    }
+
+    main {
+    flex: 1;
+    }
+
+</style>
